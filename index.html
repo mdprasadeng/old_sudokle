@@ -2,6 +2,7 @@
     <title>Sudokle</title>
 <head>
     <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script type="text/javascript">
         function onNew() {
             window.location.hash = "";
@@ -56,7 +57,6 @@
             if (hash.length > 0) {
                var hashB = atob(hash.substring(1));
                var msg = hashB.substring(hashB.indexOf("|")+1);
-               console.log(msg);
                if (msg.length == 9) {
                 text = msg.split("");
                 genNew = false;
@@ -67,7 +67,6 @@
                 text = shuffleArray(["1","2","3","4","5","6","7","8","9"]);
                 window.location.hash = btoa((Math.floor(Math.random()*10000)) + "|" + text.join(""));
             }
-            console.log(text);    
 
             window.answer = text;
             window.try = 0;
