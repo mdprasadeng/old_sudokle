@@ -4,6 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script type="text/javascript">
+        var startGuess = ["x","x","x","x","x","x","x","x","x"];
         function onNew() {
             window.location.hash = "";
             window.location.reload();
@@ -19,6 +20,9 @@
                 for (var i=0; i < 9; i++) {
                     tds[i].innerHTML = guess[i];
                     tds[i].style["background"] = colors[i];
+                    if (guess[i] === answer[i]) {
+                        startGuess[i] = guess[i];
+                    }
                 }
                 grid.style.removeProperty("display");
 
@@ -71,7 +75,7 @@
             window.answer = text;
             window.try = 0;
             window.maxTries = 5;
-            window.guess = [];
+            onClear();
 
         }
 
@@ -91,15 +95,30 @@
         }
 
         function pressed(elem) {
-            elem.disabled = true;
-            window.guess.push(elem.value);
+            window.guess[guessAt] = elem.value;
+            guessAt = window.guess.indexOf("x");
+            renderGuess();
+
+        }
+
+        function renderGuess() {
             var grid = document.getElementById("guesstable");
             var tds = grid.getElementsByTagName("td");
             for (var i=0; i < window.guess.length; i++) {
-                tds[i].innerHTML = guess[i];
+                if (guess[i] === "x") {
+                    tds[i].innerHTML = "";    
+                } else {
+                    tds[i].innerHTML = guess[i];    
+                }
+                tds[i].style["background"] = guessAt == i ? "blanchedalmond" : "none";
             }
-            document.getElementById("tickbtn").disabled = window.guess.length != 9;
-            
+            //btns
+            document.getElementById("tickbtn").disabled = guessAt > -1;   
+            for (var i=1; i<=9; i++) {
+                document.getElementById("gbtn" + i).disabled = window.guess.indexOf(i+"") >= 0;   
+            }
+            document.getElementById("rndbtn").disabled = !document.getElementById("tickbtn").disabled;   
+
         }
 
         function onClear() {
@@ -108,18 +127,35 @@
                 const element = elems[index];
                 element.disabled = false;
             }
-            var grid = document.getElementById("guesstable");
-            var tds = grid.getElementsByTagName("td");
-            for (var i=0; i < 9; i++) {
-                tds[i].innerHTML = "";
-            }
-            window.guess = [];
-            document.getElementById("tickbtn").disabled = window.guess.length != 9;
+            
+            window.guess = startGuess.slice(0);
+            window.guessAt = 0;
+            renderGuess();
         }
 
         function onRandom() {
-            window.guess = shuffleArray(["1","2","3","4","5","6","7","8","9"]);
-            onGuess();
+            var rest = [];
+            for(var i=1; i<=9; i++) {   
+               if (guess.indexOf(i+"") < 0) {
+                   rest.push(i+"");
+               }     
+            }
+
+            rest = shuffleArray(rest);
+            var r=0;
+            for(var i=0; i<9; i++) {   
+               if (guess[i] == "x") {
+                   guess[i] = rest[r];
+                   r++;
+               }     
+            }
+            guessAt = -1;
+            renderGuess();
+        }
+
+        function onGuessAt(gat) {
+            window.guessAt = gat;
+            renderGuess();
         }
 
     </script>
@@ -164,39 +200,41 @@
 
     <table id="guesstable" border="1" style="border-collapse: collapse;">
         <tr class="row">
-             <td class="cell"></td>
-             <td class="cell"></td>
-             <td class="cell"></td> 
+             <td class="cell" onclick="onGuessAt(0)"></td>
+             <td class="cell" onclick="onGuessAt(1)"></td>
+             <td class="cell" onclick="onGuessAt(2)"></td> 
         </tr>
         <tr class="row">
-            <td class="cell"></td>
-            <td class="cell"></td>
-            <td class="cell"></td> 
+            <td class="cell" onclick="onGuessAt(3)"></td>
+            <td class="cell" onclick="onGuessAt(4)"></td>
+            <td class="cell" onclick="onGuessAt(5)"></td> 
        </tr>
        <tr class="row">
-            <td class="cell"></td>
-            <td class="cell"></td>
-            <td class="cell"></td> 
+            <td class="cell" onclick="onGuessAt(6)"></td>
+            <td class="cell" onclick="onGuessAt(7)"></td>
+            <td class="cell" onclick="onGuessAt(8)"></td> 
         </tr>    
     </table>
-    <div style="margin: 0em auto; width: 33em;">
-        <input type="button" onclick="onClear()" value="X"/>
+    <div style="margin: 1em auto; width: 25em;">
 
-        <input class="guessbtn" type="button" onclick="pressed(this)" value="1"/>
-        <input class="guessbtn" type="button" onclick="pressed(this)" value="2"/>
-        <input class="guessbtn" type="button" onclick="pressed(this)" value="3"/>
-        <input class="guessbtn" type="button" onclick="pressed(this)" value="4"/>
-        <input class="guessbtn" type="button" onclick="pressed(this)" value="5"/>
-        <input class="guessbtn" type="button" onclick="pressed(this)" value="6"/>
-        <input class="guessbtn" type="button" onclick="pressed(this)" value="7"/>
-        <input class="guessbtn" type="button" onclick="pressed(this)" value="8"/>
-        <input class="guessbtn" type="button" onclick="pressed(this)" value="9"/>
+        <input class="guessbtn" id="gbtn1" type="button" onclick="pressed(this)" value="1"/>
+        <input class="guessbtn" id="gbtn2" type="button" onclick="pressed(this)" value="2"/>
+        <input class="guessbtn" id="gbtn3" type="button" onclick="pressed(this)" value="3"/>
+        <input class="guessbtn" id="gbtn4" type="button" onclick="pressed(this)" value="4"/>
+        <input class="guessbtn" id="gbtn5" type="button" onclick="pressed(this)" value="5"/>
+        <input class="guessbtn" id="gbtn6" type="button" onclick="pressed(this)" value="6"/>
+        <input class="guessbtn" id="gbtn7" type="button" onclick="pressed(this)" value="7"/>
+        <input class="guessbtn" id="gbtn8" type="button" onclick="pressed(this)" value="8"/>
+        <input class="guessbtn" id="gbtn9" type="button" onclick="pressed(this)" value="9"/>
 
 
-        <input id="tickbtn" type="button" onclick="onGuess()" value="✔" disabled/>
-        <input id="tickbtn" type="button" onclick="onRandom()" value="🎲" />
     
          
+    </div>
+    <div style="margin: 0em auto; width: 8em">
+        <input type="button" onclick="onClear()" value="X"/>
+        <input id="tickbtn" type="button" onclick="onGuess()" value="✔" disabled/>
+        <input id="rndbtn" type="button" onclick="onRandom()" value="🎲" />
     </div>
     
     <table id="grid1" border="1" style="border-collapse: collapse; ">
