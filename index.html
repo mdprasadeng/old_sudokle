@@ -233,8 +233,8 @@
     </div>
     <div style="margin: 0em auto; width: 8em">
         <input type="button" onclick="onClear()" value="X"/>
-        <input id="tickbtn" type="button" onclick="onGuess()" value="✔" disabled/>
         <input id="rndbtn" type="button" onclick="onRandom()" value="🎲" />
+        <input id="tickbtn" type="button" onclick="onGuess()" value="✔" disabled/>
     </div>
     
     <table id="grid1" border="1" style="border-collapse: collapse; ">
@@ -332,6 +332,14 @@
         <input type="button" onclick="onNew()" value="New" />    
     </div>
     <h3 style="text-align: center;">Share URL for same puzzle</h3>
+    <ul style="text-align: center;">
+        <li>Sudoku rules of grid filled with unique number from 1 to 9 apply</li>
+        <li>Take a guess what order the numbers might be in. (Tap/click on guess place and then number)</li> 
+        <li>If the number is in the correct place its <span style="background-color:lightgreen;">green</span>.</li>
+        <li>If its not in correct place but in correct row or column its <span style="background-color:lightgray;">grey</span>.</li>  
+        <li>Inspired by <a href="https://www.powerlanguage.co.uk/wordle/" target="_blank">Wordle</a></li>
+        <li>Contact at mdprasadengAT<span style="background-color:lightgreen;">g</span><span style="background-color:lightgray;">ailm</span>.com</li>
+    </ul>
 
 
 </body>
