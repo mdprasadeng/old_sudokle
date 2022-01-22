@@ -275,6 +275,20 @@
             flex-shrink: inherit;
             margin: 1em;
         }
+
+        .btnsParent {
+            display: flex;
+            text-align: center;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin: 1em;
+        }
+
+        .btnsChild {
+            text-align: center;
+            width: fit-content;
+            margin: 0.2em;
+        }
     </style>
 </head>
 
@@ -300,34 +314,61 @@
                 <td class="cell" onclick="onGuessAt(8)"></td>
             </tr>
         </table>
-        <div style="margin: 1em auto; width: 25em;">
-
-            <input class="guessbtn" id="gbtn1" type="button" onclick="onPressed(this.value)" value="1" />
-            <input class="guessbtn" id="gbtn2" type="button" onclick="onPressed(this.value)" value="2" />
-            <input class="guessbtn" id="gbtn3" type="button" onclick="onPressed(this.value)" value="3" />
-            <input class="guessbtn" id="gbtn4" type="button" onclick="onPressed(this.value)" value="4" />
-            <input class="guessbtn" id="gbtn5" type="button" onclick="onPressed(this.value)" value="5" />
-            <input class="guessbtn" id="gbtn6" type="button" onclick="onPressed(this.value)" value="6" />
-            <input class="guessbtn" id="gbtn7" type="button" onclick="onPressed(this.value)" value="7" />
-            <input class="guessbtn" id="gbtn8" type="button" onclick="onPressed(this.value)" value="8" />
-            <input class="guessbtn" id="gbtn9" type="button" onclick="onPressed(this.value)" value="9" />
-
+        <div class="btnsParent">
+            <div class="btnsChild">
+                <input class="guessbtn" id="gbtn1" type="button" onclick="onPressed(this.value)" value="1" />
+            </div>
+            <div class="btnsChild">
+                <input class="guessbtn" id="gbtn2" type="button" onclick="onPressed(this.value)" value="2" />
+            </div>
+            <div class="btnsChild">
+                <input class="guessbtn" id="gbtn3" type="button" onclick="onPressed(this.value)" value="3" />
+            </div>
+            <div class="btnsChild">
+                <input class="guessbtn" id="gbtn4" type="button" onclick="onPressed(this.value)" value="4" />
+            </div>
+            <div class="btnsChild">
+                <input class="guessbtn" id="gbtn5" type="button" onclick="onPressed(this.value)" value="5" />
+            </div>
+            <div class="btnsChild">
+                <input class="guessbtn" id="gbtn6" type="button" onclick="onPressed(this.value)" value="6" />
+            </div>
+            <div class="btnsChild">
+                <input class="guessbtn" id="gbtn7" type="button" onclick="onPressed(this.value)" value="7" />
+            </div>
+            <div class="btnsChild">
+                <input class="guessbtn" id="gbtn8" type="button" onclick="onPressed(this.value)" value="8" />
+            </div>
+            <div class="btnsChild">
+                <input class="guessbtn" id="gbtn9" type="button" onclick="onPressed(this.value)" value="9" />
+            </div>
+            
         </div>
-        <div style="margin: 0em auto; width: 8em">
-            <input type="button" onclick="onClear()" value="X" />
-            <input id="rndbtn" type="button" onclick="onRandom()" value="🎲" />
-            <input id="tickbtn" type="button" onclick="onGuess()" value="✔" disabled />
+        <div class="btnsParent">
+            <div class="btnsChild">
+                <input type="button" onclick="onClear()" value="X" />
+            </div>
+            <div class="btnsChild">
+                <input id="rndbtn" type="button" onclick="onRandom()" value="🎲" />
+            </div>
+            <div class="btnsChild">
+                <input id="tickbtn" type="button" onclick="onGuess()" value="✔" disabled />
+            </div>
         </div>
         </br>
-        <div style="margin: 0em auto; width: 30em">
-            <input type="button" onclick="onInstruction()" style="width: inherit;" value="Show/Hide Instructions" />
+        <div style="margin: 0em auto; width: 100%; text-align: center;">
+            <input type="button" onclick="onInstruction()" style="width: fit-content;" value="Show/Hide Instructions" />
             <ul id="instructions" style="text-align: left; border: 0px solid; ">
-                
-                        <li>Here is a grid filled with non-repeating numerals 1 to 9.</li>
-                        <li>Guess what order the numbers might be in — tap/click to enter your guess in the topmost box using keyboard (arrow keys and number keys) or the buttons provided and click ✔ or press Enter.</li> 
-                        <li>If a number is in the correct place, it will turn <span style="background-color:lightgreen;">green</span>.</li>
-                        <li>If it is in the correct row or column but not in the correct place, it will turn <span style="background-color:lightgray;">grey</span>.</li>
-                        <li>After guessing the correct arrangement, a new goal appears! Play for as long as you like. Refresh the page for a new puzzle :)</li>       
+
+                <li>Here is a grid filled with non-repeating numerals 1 to 9.</li>
+                <li>Guess what order the numbers might be in — tap/click to enter your guess in the topmost box using
+                    keyboard (arrow keys and number keys) or the buttons provided and click ✔ or press Enter.</li>
+                <li>If a number is in the correct place, it will turn <span
+                        style="background-color:lightgreen;">green</span>.</li>
+                <li>If it is in the correct row or column but not in the correct place, it will turn <span
+                        style="background-color:lightgray;">grey</span>.</li>
+                <li>After guessing the correct arrangement, a new goal appears! Play for as long as you like. Refresh
+                    the page for a new puzzle :)</li>
             </ul>
         </div>
 
