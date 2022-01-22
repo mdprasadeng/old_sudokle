@@ -268,6 +268,7 @@
             display: flex;
             text-align: center;
             flex-wrap: wrap;
+            justify-content: center;
         }
 
         .guessChildren {
@@ -293,6 +294,28 @@
 
 <body onload="onLoad()">
     <h2 style="text-align: center;">Sudokle</h2>
+    <div id="GuessPanel">
+        <div id="Goal">
+        </div>
+    </div>
+
+
+    </br>
+    <div style="margin: 0em auto; width: 100%; text-align: center;">
+        <input type="button" onclick="onInstruction()" style="width: fit-content;" value="Show/Hide Instructions" />
+        <ul id="instructions" style="text-align: left; border: 0px solid; ">
+
+            <li>Here is a grid filled with non-repeating numerals 1 to 9.</li>
+            <li>Guess what order the numbers might be in — tap/click to enter your guess in the topmost box using
+                keyboard (arrow keys and number keys) or the buttons provided and click ✔ or press Enter.</li>
+            <li>If a number is in the correct place, it will turn <span
+                    style="background-color:lightgreen;">green</span>.</li>
+            <li>If it is in the correct row or column but not in the correct place, it will turn <span
+                    style="background-color:lightgray;">grey</span>.</li>
+            <li>After guessing the correct arrangement, a new goal appears! Play for as long as you like. Refresh
+                the page for a new puzzle :)</li>
+        </ul>
+    </div>
 
     <div style="margin: 0px;">
         <div style="text-align: center;">Input</div>
@@ -341,7 +364,7 @@
             <div class="btnsChild">
                 <input class="guessbtn" id="gbtn9" type="button" onclick="onPressed(this.value)" value="9" />
             </div>
-            
+
         </div>
         <div class="btnsParent">
             <div class="btnsChild">
@@ -354,28 +377,7 @@
                 <input id="tickbtn" type="button" onclick="onGuess()" value="✔" disabled />
             </div>
         </div>
-        </br>
-        <div style="margin: 0em auto; width: 100%; text-align: center;">
-            <input type="button" onclick="onInstruction()" style="width: fit-content;" value="Show/Hide Instructions" />
-            <ul id="instructions" style="text-align: left; border: 0px solid; ">
 
-                <li>Here is a grid filled with non-repeating numerals 1 to 9.</li>
-                <li>Guess what order the numbers might be in — tap/click to enter your guess in the topmost box using
-                    keyboard (arrow keys and number keys) or the buttons provided and click ✔ or press Enter.</li>
-                <li>If a number is in the correct place, it will turn <span
-                        style="background-color:lightgreen;">green</span>.</li>
-                <li>If it is in the correct row or column but not in the correct place, it will turn <span
-                        style="background-color:lightgray;">grey</span>.</li>
-                <li>After guessing the correct arrangement, a new goal appears! Play for as long as you like. Refresh
-                    the page for a new puzzle :)</li>
-            </ul>
-        </div>
-
-
-        <div id="GuessPanel">
-            <div id="Goal">
-            </div>
-        </div>
         </br>
         <div style="text-align: center;">Inspired by Sudoku & <a href="https://www.powerlanguage.co.uk/wordle/"
                 target="_blank">Wordle.</a> By durman</div>
