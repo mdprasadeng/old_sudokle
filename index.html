@@ -1,23 +1,34 @@
 <html>
-    <title>Sudokle</title>
+<title>Sudokle</title>
+
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script type="text/javascript">
-        var startGuess = ["x","x","x","x","x","x","x","x","x"];
+        var startGuess = ["x", "x", "x", "x", "x", "x", "x", "x", "x"];
+        function onInstruction() {
+            var instructionElem = document.getElementById("instructions");
+            if (instructionElem.style.display == "none") {
+                instructionElem.style.display = "block";
+                localStorage["hInst"] = false;
+            } else {
+                instructionElem.style.display = "none"
+                localStorage["hInst"] = true;
+            }
+        }
+
         function onNew() {
             window.location.hash = "";
             window.location.reload();
         }
-        function onGuess()
-        {
-            
+        function onGuess() {
+
             window.try++;
             if (window.try <= window.maxTries && guess.length == 9) {
                 var colors = getColors(guess);
-                var grid = document.getElementById("grid"+window.try);
+                var grid = document.getElementById("grid" + window.try);
                 var tds = grid.getElementsByTagName("td");
-                for (var i=0; i < 9; i++) {
+                for (var i = 0; i < 9; i++) {
                     tds[i].innerHTML = guess[i];
                     tds[i].style["background"] = colors[i];
                     if (guess[i] === answer[i]) {
@@ -30,19 +41,19 @@
             onClear();
 
         }
-        
-        function getColors (guess) {
+
+        function getColors(guess) {
             var colors = [];
-            for(var i=0; i < 9; i++) {
+            for (var i = 0; i < 9; i++) {
                 if (guess[i] === answer[i]) {
                     colors.push("lightgreen")
                 } else {
-                    var rowStart = i - i%3;
-                    var columnStart = i%3;
-                    var otherColumns = [answer[columnStart], answer[columnStart + 3],answer[columnStart + 6]];
+                    var rowStart = i - i % 3;
+                    var columnStart = i % 3;
+                    var otherColumns = [answer[columnStart], answer[columnStart + 3], answer[columnStart + 6]];
                     var otherRows = [answer[rowStart], answer[rowStart + 1], answer[rowStart + 2]];
-                    var rowMatch = otherRows.indexOf(guess[i]) >= 0 ;
-                    var colMatch = otherColumns.indexOf(guess[i]) >= 0 ;
+                    var rowMatch = otherRows.indexOf(guess[i]) >= 0;
+                    var colMatch = otherColumns.indexOf(guess[i]) >= 0;
                     if (rowMatch || colMatch) {
                         colors.push("lightgray")
                     } else {
@@ -53,28 +64,30 @@
             return colors;
         }
 
-        function onLoad()
-        {
+        function onLoad() {
+            if (localStorage["hInst"]) {
+                onInstruction();
+            }
             var hash = window.location.hash;
             var genNew = true;
             var text;
             if (hash.length > 0) {
-               var hashB = atob(hash.substring(1));
-               var msg = hashB.substring(hashB.indexOf("|")+1);
-               if (msg.length == 9) {
-                text = msg.split("");
-                genNew = false;
-               }
+                var hashB = atob(hash.substring(1));
+                var msg = hashB.substring(hashB.indexOf("|") + 1);
+                if (msg.length == 9) {
+                    text = msg.split("");
+                    genNew = false;
+                }
             }
 
             if (genNew) {
-                text = shuffleArray(["1","2","3","4","5","6","7","8","9"]);
-                window.location.hash = btoa((Math.floor(Math.random()*10000)) + "|" + text.join(""));
+                text = shuffleArray(["1", "2", "3", "4", "5", "6", "7", "8", "9"]);
+                window.location.hash = btoa((Math.floor(Math.random() * 10000)) + "|" + text.join(""));
             }
 
             window.answer = text;
             window.try = 0;
-            window.maxTries = 5;
+            window.maxTries = 4;
             onClear();
 
         }
@@ -82,19 +95,23 @@
 
         function shuffleArray(array) {
             for (var i = array.length - 1; i > 0; i--) {
-            
+
                 // Generate random number
                 var j = Math.floor(Math.random() * (i + 1));
-                            
+
                 var temp = array[i];
                 array[i] = array[j];
                 array[j] = temp;
             }
-                
+
             return array;
         }
 
         function pressed(elem) {
+            if (guessAt < 0) return;
+            if (window.guess.indexOf(elem.value) >= 0) {
+                window.guess[window.guess.indexOf(elem.value)] = window.guess[guessAt];
+            }
             window.guess[guessAt] = elem.value;
             guessAt = window.guess.indexOf("x");
             renderGuess();
@@ -104,20 +121,24 @@
         function renderGuess() {
             var grid = document.getElementById("guesstable");
             var tds = grid.getElementsByTagName("td");
-            for (var i=0; i < window.guess.length; i++) {
+            for (var i = 0; i < window.guess.length; i++) {
                 if (guess[i] === "x") {
-                    tds[i].innerHTML = "";    
+                    tds[i].innerHTML = "";
                 } else {
-                    tds[i].innerHTML = guess[i];    
+                    tds[i].innerHTML = guess[i];
                 }
                 tds[i].style["background"] = guessAt == i ? "blanchedalmond" : "none";
             }
             //btns
-            document.getElementById("tickbtn").disabled = guessAt > -1;   
-            for (var i=1; i<=9; i++) {
-                document.getElementById("gbtn" + i).disabled = window.guess.indexOf(i+"") >= 0;   
+            document.getElementById("tickbtn").disabled = window.guess.indexOf("x") > -1;
+            for (var i = 1; i <= 9; i++) {
+                if (window.guess.indexOf(i + "") >= 0) {
+                    document.getElementById("gbtn" + i).style.opacity = 0.6
+                } else {
+                    document.getElementById("gbtn" + i).style.opacity = 1
+                }
             }
-            document.getElementById("rndbtn").disabled = !document.getElementById("tickbtn").disabled;   
+            document.getElementById("rndbtn").disabled = !document.getElementById("tickbtn").disabled;
 
         }
 
@@ -127,7 +148,7 @@
                 const element = elems[index];
                 element.disabled = false;
             }
-            
+
             window.guess = startGuess.slice(0);
             window.guessAt = 0;
             renderGuess();
@@ -135,19 +156,19 @@
 
         function onRandom() {
             var rest = [];
-            for(var i=1; i<=9; i++) {   
-               if (guess.indexOf(i+"") < 0) {
-                   rest.push(i+"");
-               }     
+            for (var i = 1; i <= 9; i++) {
+                if (guess.indexOf(i + "") < 0) {
+                    rest.push(i + "");
+                }
             }
 
             rest = shuffleArray(rest);
-            var r=0;
-            for(var i=0; i<9; i++) {   
-               if (guess[i] == "x") {
-                   guess[i] = rest[r];
-                   r++;
-               }     
+            var r = 0;
+            for (var i = 0; i < 9; i++) {
+                if (guess[i] == "x") {
+                    guess[i] = rest[r];
+                    r++;
+                }
             }
             guessAt = -1;
             renderGuess();
@@ -161,7 +182,7 @@
     </script>
     <style>
         table {
-            margin: 1em auto;
+            margin: 0em auto;
         }
 
         td {
@@ -189,157 +210,153 @@
 
         input {
             width: 3em;
-            height: 3em; 
-            font-weight: bold;      
+            height: 3em;
+            font-weight: bold;
         }
-    </style> 
+    </style>
 </head>
 
 <body onload="onLoad()">
     <h2 style="text-align: center;">Sudokle</h2>
 
+    <div style="text-align: center;">Input</div>
     <table id="guesstable" border="1" style="border-collapse: collapse;">
         <tr class="row">
-             <td class="cell" onclick="onGuessAt(0)"></td>
-             <td class="cell" onclick="onGuessAt(1)"></td>
-             <td class="cell" onclick="onGuessAt(2)"></td> 
+            <td class="cell" onclick="onGuessAt(0)"></td>
+            <td class="cell" onclick="onGuessAt(1)"></td>
+            <td class="cell" onclick="onGuessAt(2)"></td>
         </tr>
         <tr class="row">
             <td class="cell" onclick="onGuessAt(3)"></td>
             <td class="cell" onclick="onGuessAt(4)"></td>
-            <td class="cell" onclick="onGuessAt(5)"></td> 
-       </tr>
-       <tr class="row">
+            <td class="cell" onclick="onGuessAt(5)"></td>
+        </tr>
+        <tr class="row">
             <td class="cell" onclick="onGuessAt(6)"></td>
             <td class="cell" onclick="onGuessAt(7)"></td>
-            <td class="cell" onclick="onGuessAt(8)"></td> 
-        </tr>    
+            <td class="cell" onclick="onGuessAt(8)"></td>
+        </tr>
     </table>
     <div style="margin: 1em auto; width: 25em;">
 
-        <input class="guessbtn" id="gbtn1" type="button" onclick="pressed(this)" value="1"/>
-        <input class="guessbtn" id="gbtn2" type="button" onclick="pressed(this)" value="2"/>
-        <input class="guessbtn" id="gbtn3" type="button" onclick="pressed(this)" value="3"/>
-        <input class="guessbtn" id="gbtn4" type="button" onclick="pressed(this)" value="4"/>
-        <input class="guessbtn" id="gbtn5" type="button" onclick="pressed(this)" value="5"/>
-        <input class="guessbtn" id="gbtn6" type="button" onclick="pressed(this)" value="6"/>
-        <input class="guessbtn" id="gbtn7" type="button" onclick="pressed(this)" value="7"/>
-        <input class="guessbtn" id="gbtn8" type="button" onclick="pressed(this)" value="8"/>
-        <input class="guessbtn" id="gbtn9" type="button" onclick="pressed(this)" value="9"/>
+        <input class="guessbtn" id="gbtn1" type="button" onclick="pressed(this)" value="1" />
+        <input class="guessbtn" id="gbtn2" type="button" onclick="pressed(this)" value="2" />
+        <input class="guessbtn" id="gbtn3" type="button" onclick="pressed(this)" value="3" />
+        <input class="guessbtn" id="gbtn4" type="button" onclick="pressed(this)" value="4" />
+        <input class="guessbtn" id="gbtn5" type="button" onclick="pressed(this)" value="5" />
+        <input class="guessbtn" id="gbtn6" type="button" onclick="pressed(this)" value="6" />
+        <input class="guessbtn" id="gbtn7" type="button" onclick="pressed(this)" value="7" />
+        <input class="guessbtn" id="gbtn8" type="button" onclick="pressed(this)" value="8" />
+        <input class="guessbtn" id="gbtn9" type="button" onclick="pressed(this)" value="9" />
 
-
-    
-         
     </div>
     <div style="margin: 0em auto; width: 8em">
-        <input type="button" onclick="onClear()" value="X"/>
+        <input type="button" onclick="onClear()" value="X" />
         <input id="rndbtn" type="button" onclick="onRandom()" value="🎲" />
-        <input id="tickbtn" type="button" onclick="onGuess()" value="✔" disabled/>
+        <input id="tickbtn" type="button" onclick="onGuess()" value="✔" disabled />
     </div>
-    
+    </br>
+    <div style="margin: 0em auto; width: 30em">
+        <input type="button" onclick="onInstruction()" style="width: inherit;" value="Show/Hide Instructions" />
+        <ul id="instructions" style="text-align: left; border: 0px solid; ">
+            <li>Sudoku rules of grid filled with unique number from 1 to 9 apply</li>
+            <li>Take a guess what order the numbers might be in. </li>
+            <li>Tap/click on guess place,then numbers, click ✔ to guess</li>
+            <li>If the number is in the correct place its <span style="background-color:lightgreen;">green</span>.</li>
+            <li>If its not in correct place but in correct row or column its <span
+                    style="background-color:lightgray;">grey</span>.</li>
+            <li>Inspired by <a href="https://www.powerlanguage.co.uk/wordle/" target="_blank">Wordle</a></li>
+            <li>Contact at mdprasadengAT<span style="background-color:lightgreen;">g</span><span
+                    style="background-color:lightgray;">ailm</span>.com</li>
+        </ul>
+    </div>
+
+    </br>
+    <div style="text-align: center;">Guess 1</div>
     <table id="grid1" border="1" style="border-collapse: collapse; ">
         <tr class="row">
-             <td class="cell"></td>
-             <td class="cell"></td>
-             <td class="cell"></td> 
+            <td class="cell"></td>
+            <td class="cell"></td>
+            <td class="cell"></td>
         </tr>
         <tr class="row">
             <td class="cell"></td>
             <td class="cell"></td>
-            <td class="cell"></td> 
-       </tr>
-       <tr class="row">
+            <td class="cell"></td>
+        </tr>
+        <tr class="row">
             <td class="cell"></td>
             <td class="cell"></td>
-            <td class="cell"></td> 
-        </tr>    
+            <td class="cell"></td>
+        </tr>
     </table>
 
+    </br>
+    <div style="text-align: center;">Guess 2</div>
     <table id="grid2" border="1" style="border-collapse: collapse; ">
         <tr class="row">
-             <td class="cell"></td>
-             <td class="cell"></td>
-             <td class="cell"></td> 
+            <td class="cell"></td>
+            <td class="cell"></td>
+            <td class="cell"></td>
         </tr>
         <tr class="row">
             <td class="cell"></td>
             <td class="cell"></td>
-            <td class="cell"></td> 
-       </tr>
-       <tr class="row">
+            <td class="cell"></td>
+        </tr>
+        <tr class="row">
             <td class="cell"></td>
             <td class="cell"></td>
-            <td class="cell"></td> 
-        </tr>    
+            <td class="cell"></td>
+        </tr>
     </table>
 
+    </br>
+    <div style="text-align: center;">Guess 3</div>
     <table id="grid3" border="1" style="border-collapse: collapse; ">
         <tr class="row">
-             <td class="cell"></td>
-             <td class="cell"></td>
-             <td class="cell"></td> 
+            <td class="cell"></td>
+            <td class="cell"></td>
+            <td class="cell"></td>
         </tr>
         <tr class="row">
             <td class="cell"></td>
             <td class="cell"></td>
-            <td class="cell"></td> 
-       </tr>
-       <tr class="row">
+            <td class="cell"></td>
+        </tr>
+        <tr class="row">
             <td class="cell"></td>
             <td class="cell"></td>
-            <td class="cell"></td> 
-        </tr>    
+            <td class="cell"></td>
+        </tr>
     </table>
 
-
+    </br>
+    <div style="text-align: center;">Guess 4</div>
     <table id="grid4" border="1" style="border-collapse: collapse; ">
         <tr class="row">
-             <td class="cell"></td>
-             <td class="cell"></td>
-             <td class="cell"></td> 
+            <td class="cell"></td>
+            <td class="cell"></td>
+            <td class="cell"></td>
         </tr>
         <tr class="row">
             <td class="cell"></td>
             <td class="cell"></td>
-            <td class="cell"></td> 
-       </tr>
-       <tr class="row">
             <td class="cell"></td>
-            <td class="cell"></td>
-            <td class="cell"></td> 
-        </tr>    
-    </table>
-
-    <table id="grid5" border="1" style="border-collapse: collapse; ">
-        <tr class="row">
-             <td class="cell"></td>
-             <td class="cell"></td>
-             <td class="cell"></td> 
         </tr>
         <tr class="row">
             <td class="cell"></td>
             <td class="cell"></td>
-            <td class="cell"></td> 
-       </tr>
-       <tr class="row">
             <td class="cell"></td>
-            <td class="cell"></td>
-            <td class="cell"></td> 
-        </tr>    
+        </tr>
     </table>
 
+    </br>
     <div style="margin: 0em auto; width: 6em;">
-        <input type="button" style="width: 7em;" onclick="onNew()" value="New" />    
+        <input type="button" style="width: 7em;" onclick="onNew()" value="New" />
     </div>
     <h3 style="text-align: center;">Share URL for same puzzle</h3>
-    <ul style="text-align: center;">
-        <li>Sudoku rules of grid filled with unique number from 1 to 9 apply</li>
-        <li>Take a guess what order the numbers might be in. (Tap/click on guess place,then numbers, click ✔ to guess)</li> 
-        <li>If the number is in the correct place its <span style="background-color:lightgreen;">green</span>.</li>
-        <li>If its not in correct place but in correct row or column its <span style="background-color:lightgray;">grey</span>.</li>  
-        <li>Inspired by <a href="https://www.powerlanguage.co.uk/wordle/" target="_blank">Wordle</a></li>
-        <li>Contact at mdprasadengAT<span style="background-color:lightgreen;">g</span><span style="background-color:lightgray;">ailm</span>.com</li>
-    </ul>
+
 
 
 </body>
