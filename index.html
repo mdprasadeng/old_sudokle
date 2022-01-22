@@ -163,7 +163,7 @@
             document.getElementById("tickbtn").disabled = window.guess.indexOf("x") > -1;
             for (var i = 1; i <= 9; i++) {
                 if (window.guess.indexOf(i + "") >= 0) {
-                    document.getElementById("gbtn" + i).style.opacity = 0.6
+                    document.getElementById("gbtn" + i).style.opacity = 0.2
                 } else {
                     document.getElementById("gbtn" + i).style.opacity = 1
                 }
@@ -273,7 +273,7 @@
 
         .guessChildren {
             flex-shrink: inherit;
-            margin: 1em;
+            margin: 10px;
         }
 
         .btnsParent {
