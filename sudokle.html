@@ -1,0 +1,121 @@
+<html>
+<title>Sudokle</title>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        .ninexnine {
+            display: flex;
+            flex-wrap: wrap;
+            width: 36em;
+            justify-content: center;
+            border: 0.2em solid black;
+            margin: auto;
+        }
+
+        .threexthree {
+            display: flex;
+            flex-wrap: wrap;
+            width: 12em;
+            justify-content: center;
+        }
+
+        .cell {
+            width: 4em;
+            height: 4em;
+            opacity: 0.5;
+        }
+
+        .colorA {
+            background: lightgray;
+        }
+
+        .colorB {
+            background: white;
+        }
+
+
+        .cellguess {
+            display: flex;
+            justify-content: center;
+            /* align horizontal */
+            align-items: center;
+            /* align vertical */
+            opacity: 1;
+            font-size: small;
+        }
+
+        .cellguess1 {
+            position: absolute;
+            background: lightgray;
+        }
+
+        .cellguess2 {
+            position: absolute;
+            background: lightgreen;
+        }
+
+        .cellguess3 {
+            position: absolute;
+            background: lightgreen;
+
+        }
+
+        .cellguess4 {
+
+            position: absolute;
+            background: lightgreen;
+
+        }
+
+        
+        .cellCorrectGuess {
+
+            font-size:xx-large;
+            opacity: 0.6;
+            width: inherit;
+            height: inherit;
+        }
+    </style>
+    <script type="text/javascript">
+        function onLoad() {
+            var html = `<div class="ninexnine">`;
+            var even = true;    
+            for (let i = 0; i < 9; i++) {
+                if (even) {
+                    html += `<div class="threexthree colorA">`
+                } else {
+                    html += `<div class="threexthree colorB">`
+                }
+                var innerEven = true;
+                for (let j = 0; j < 9; j++) {
+                    if (even == innerEven) {
+                        html += `<div class="cell colorA">` + GetCellHtml() + `</div>`
+                    } else {
+                        html += `<div class="cell colorB">` + GetCellHtml() + `</div>`
+                    }
+                    innerEven = !innerEven;    
+                }
+                html += `</div>`;
+                even = !even;
+            }
+            html += `</div>`;
+            document.getElementById("input").innerHTML = html;
+        }
+
+        function GetCellHtml() {
+            // return `
+            // <div class="cellguess cellguess1">1</div>
+            // <div class="cellguess cellguess2">2</div>
+            // <div class="cellguess cellguess3">3</div>
+            // <div class="cellguess cellguess4">4</div>
+            return `<div class="cellguess cellCorrectGuess">X</div>
+            `;
+        }
+    </script>
+</head>
+
+<body onload="onLoad()">
+    <div id="input">
+</body>
