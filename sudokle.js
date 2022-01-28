@@ -29,25 +29,25 @@ function OnGuess() {
     for (let i = 0; i < 3; i++) {
         for (let j = 0; j < 3; j++) {
             if (currentGuess[sx * 3 + i][sy * 3 + j] == cell[sx * 3 + i][sy * 3 + j]) {
-                guess[i][j].push({ val: currentGuess[sx * 3 + i][sy * 3 + j], resutl: "hit" })
+                guess[sx*3 +i][sy*3+ j].push({ val: currentGuess[sx * 3 + i][sy * 3 + j], result: "hit" })
             } else {
                 var close = false;
                 for (let ti = 0; ti < 3; ti++) {
                     for (let tj = 0; tj < 3; tj++) {
                         if (currentGuess[sx * 3 + i][sy * 3 + j] == cell[sx * 3 + ti][sy * 3 + tj]) {
                             close = true;
-                            guess[i][j].push({ val: currentGuess[sx * 3 + i][sy * 3 + j], resutl: "close" })
+                            guess[sx*3 +i][sy*3+ j].push({ val: currentGuess[sx * 3 + i][sy * 3 + j], resutl: "close" })
                         }
                     }
                 }
                 if (!close) {
-                    guess[i][j].push({ val: currentGuess[sx * 3 + i][sy * 3 + j], resutl: "miss" })
+                    guess[sx*3 +i][sy*3+ j].push({ val: currentGuess[sx * 3 + i][sy * 3 + j], resutl: "miss" })
                 }
             }
         }
     }
     console.log(guess);
-
+    reDraw();
 }
 
 function onLoad() {
@@ -224,51 +224,98 @@ function drawSudokuMiniGrid(x, y, ctx) {
         }
     }
 
-    var diagWidth = 0.5;
-    ctx.lineWidth = diagWidth;
-    // top left 1
-    for (let i = 0; i < 3; i++) {
-        ctx.beginPath();
-        ctx.moveTo(drawX + 0, drawY + state.unitSize / 2 + state.unitSize * i);
-        ctx.lineTo(drawX + state.unitSize / 2 + state.unitSize * i, drawY + 0);
-        ctx.stroke();
-    }
-
-    // top left 2
-    for (let i = 0; i < 3; i++) {
-        ctx.beginPath();
-        ctx.moveTo(drawX + state.unitSize / 2 + state.unitSize * i, drawY + (state.height / 3));
-        ctx.lineTo(drawX + (state.width / 3), drawY + state.unitSize / 2 + state.unitSize * i);
-        ctx.stroke();
-    }
-
-    // top right 1
-    for (let i = 0; i < 3; i++) {
-        ctx.beginPath();
-        ctx.moveTo(drawX + state.unitSize / 2 + state.unitSize * i, drawY + 0);
-        ctx.lineTo(drawX + (state.width / 3), drawY + state.unitSize / 2 + state.unitSize * (3 - 1 - i));
-        ctx.stroke();
-    }
-
-    //top right 2
-    for (let i = 0; i < 3; i++) {
-        ctx.beginPath();
-        ctx.moveTo(drawX + 0, drawY + state.unitSize / 2 + state.unitSize * i);
-        ctx.lineTo(drawX + state.unitSize / 2 + state.unitSize * (3 - 1 - i), drawY + (state.height / 3));
-        ctx.stroke();
-    }
-
-    var fontSize = 12;
+        var fontSize = 12;
     ctx.font = fontSize + 'px monospace';
+
     for (let i = 0; i < 3; i++) {
         for (let j = 0; j < 3; j++) {
-            ctx.fillText(cell[i][j], state.unitSize / 2 + state.unitSize * i - state.unitSize / 3, state.unitSize / 2 + state.unitSize * j - state.unitSize / 3);
-            ctx.fillText(cell[i][j], state.unitSize / 2 + state.unitSize * i - state.unitSize / 3, state.unitSize / 2 + state.unitSize * j + state.unitSize / 3);
-            ctx.fillText(cell[i][j], state.unitSize / 2 + state.unitSize * i + state.unitSize / 3, state.unitSize / 2 + state.unitSize * j - state.unitSize / 3);
-            ctx.fillText(cell[i][j], state.unitSize / 2 + state.unitSize * i + state.unitSize / 3, state.unitSize / 2 + state.unitSize * j + state.unitSize / 3);
+            var g = guess[x*3 + i][y*3 + j];
+            if (g.length > 0) {
+                if (g[0].result == "hit") {
+                    ctx.fillStyle = 'green';
+                } else if (g[0].result == "close")  {
+                    ctx.fillStyle = 'yellow';
+                } else {
+                    ctx.fillStyle = 'black';
+                }
+                ctx.fillText(g[0].val, drawX + state.unitSize / 2 + state.unitSize * i - state.unitSize / 3, drawY + state.unitSize / 2 + state.unitSize * j - state.unitSize / 3);
+            }
+            if (g.length > 1) {
+                if (g[1].result == "hit") {
+                    ctx.fillStyle = 'green';
+                } else if (g[1].result == "close")  {
+                    ctx.fillStyle = 'yellow';
+                } else {
+                    ctx.fillStyle = 'black';
+                }
 
+                ctx.fillText(g[1].val, drawX + state.unitSize / 2 + state.unitSize * i + state.unitSize / 3, drawY + state.unitSize / 2 + state.unitSize * j - state.unitSize / 3);
+            }
+            if (g.length > 2) {
+                if (g[2].result == "hit") {
+                    ctx.fillStyle = 'green';
+                } else if (g[2].result == "close")  {
+                    ctx.fillStyle = 'yellow';
+                } else {
+                    ctx.fillStyle = 'black';
+                }
+                ctx.fillText(g[2].val, drawX + state.unitSize / 2 + state.unitSize * i - state.unitSize / 3, drawY + state.unitSize / 2 + state.unitSize * j + state.unitSize / 3);
+            }
+            if (g.length > 3) {
+                if (g[3].result == "hit") {
+                    ctx.fillStyle = 'green';
+                } else if (g[3].result == "close")  {
+                    ctx.fillStyle = 'yellow';
+                } else {
+                    ctx.fillStyle = 'black';
+                }
+                ctx.fillText(g[3].val, drawX + state.unitSize / 2 + state.unitSize * i + state.unitSize / 3, drawY + state.unitSize / 2 + state.unitSize * j + state.unitSize / 3);
+            }
         }
     }
+
+
+    // var diagWidth = 0.5;
+    // ctx.lineWidth = diagWidth;
+    // // top left 1
+    // for (let i = 0; i < 3; i++) {
+    //     ctx.beginPath();
+    //     ctx.moveTo(drawX + 0, drawY + state.unitSize / 2 + state.unitSize * i);
+    //     ctx.lineTo(drawX + state.unitSize / 2 + state.unitSize * i, drawY + 0);
+    //     ctx.stroke();
+    // }
+
+    // // top left 2
+    // for (let i = 0; i < 3; i++) {
+    //     ctx.beginPath();
+    //     ctx.moveTo(drawX + state.unitSize / 2 + state.unitSize * i, drawY + (state.height / 3));
+    //     ctx.lineTo(drawX + (state.width / 3), drawY + state.unitSize / 2 + state.unitSize * i);
+    //     ctx.stroke();
+    // }
+
+    // // top right 1
+    // for (let i = 0; i < 3; i++) {
+    //     ctx.beginPath();
+    //     ctx.moveTo(drawX + state.unitSize / 2 + state.unitSize * i, drawY + 0);
+    //     ctx.lineTo(drawX + (state.width / 3), drawY + state.unitSize / 2 + state.unitSize * (3 - 1 - i));
+    //     ctx.stroke();
+    // }
+
+    // //top right 2
+    // for (let i = 0; i < 3; i++) {
+    //     ctx.beginPath();
+    //     ctx.moveTo(drawX + 0, drawY + state.unitSize / 2 + state.unitSize * i);
+    //     ctx.lineTo(drawX + state.unitSize / 2 + state.unitSize * (3 - 1 - i), drawY + (state.height / 3));
+    //     ctx.stroke();
+    // }
+
+    // for (let i = 0; i < 3; i++) {
+    //     for (let j = 0; j < 3; j++) {
+    //         ctx.fillText(cell[i][j], state.unitSize / 2 + state.unitSize * i + state.unitSize / 3, state.unitSize / 2 + state.unitSize * j - state.unitSize / 3);
+    //         ctx.fillText(cell[i][j], state.unitSize / 2 + state.unitSize * i + state.unitSize / 3, state.unitSize / 2 + state.unitSize * j + state.unitSize / 3);
+
+    //     }
+    // }
 
 }
 
