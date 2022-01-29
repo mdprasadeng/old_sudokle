@@ -229,6 +229,14 @@ function draw3x3At(x, y, ctx, selected) {
 
 function draw1x1At(x,y, ctx, selected, px, py) {
     ctx.translate(x * state.unitSize, y * state.unitSize);
+    if (selected && x == (state.sx % 3) && y == (state.sy % 3)) {
+        console.log("yellow at" + state.sx + ":" + state.sy);
+        ctx.save();
+        ctx.fillStyle = "yellow"
+        ctx.fill(); 
+        ctx.restore();  
+    }
+
     {
         var guesses = state.guess[px*3 + x][py*3 + y];
         for (let i=0; i < Math.min(4, guesses.length); i++) {
@@ -263,10 +271,6 @@ function draw1x1At(x,y, ctx, selected, px, py) {
     ctx.rect(0, 0, state.unitSize, state.unitSize);
     ctx.stroke()
     
-    if (selected && x == (state.sx % 3) && y == (state.sy % 3)) {
-        ctx.fillStyle = "yellow"
-        ctx.fill();   
-    }
 
     var currentGuess = state.currentGuess[px*3+x][py*3+y];
     if (currentGuess > 0) {
@@ -274,6 +278,7 @@ function draw1x1At(x,y, ctx, selected, px, py) {
         ctx.font = "25px Arial"; // To change font size and type
         ctx.fillText(currentGuess, unitSize/2, unitSize/2);
     }
+
     
 
     ctx.translate(-1 * x * state.unitSize, -1 * y * state.unitSize);
