@@ -12,6 +12,7 @@ var answer = [];
 var correct = [];
 var current = [];
 var guessed = [];
+var correctGrid = [];
 
 
 class Guess {
@@ -35,10 +36,16 @@ function init() {
         correct[i] = [];
         current[i] = [];
         guessed[i] = [];
+        if (i < 3) {
+            correctGrid[i] = [];
+        }
         for (let j = 0; j < 9; j++) {
             correct[i][j] = -1;
             current[i][j] = -1;
             guessed[i][j] = [];
+            if (i < 3 && j < 3) {
+                correctGrid[i][j] = [];
+            }
         }
     }
 }
@@ -145,9 +152,6 @@ function draw() {
             var currentCell = current[i][j];
 
             if (correctCell > 0 || currentCell > 0) {
-                if (correctCell > 0) {
-                    console.log(correctCell);
-                }
                 DrawText(ctx, correctCell > 0 ? correctCell : currentCell, 40, newPoint({ x: dim.unit * i + dim.unit / 2, y: dim.unit * j + dim.unit / 2 }))
             }
 
@@ -157,15 +161,20 @@ function draw() {
     //Draw9x9 guesses
     for (let i = 0; i < 9; i++) {
         for (let j = 0; j < 9; j++) {
+            var gx = Math.floor(i/3);
+            var gy = Math.floor(j/3);
+            var correctGuesses = correctGrid[gx][gy];
+            
             for (var g = 1; g <= guessed[i][j].length; g++) {
                 var guess = guessed[i][j][g-1];
-                if (guess.result == "hit") continue;    
+                if (guess.result == "hit") continue;
+                if (correctGuesses.indexOf(guess.val) >= 0) continue;    
                 var path = newPath({
                     lineWidth: 1,
                     points: GetGuessPath(g),
                     offset: GetGuessOffset(g, i, j),
                     scaleBy: dim.unit / 2,
-                    opacity: 0.7,
+                    opacity: 1,
                     fillColor: guess.getFillColor()
                 });
                 DrawPath(ctx, path);
@@ -220,8 +229,11 @@ function onPressed(val) {
 }
 
 function onGuess() {
+    var gx = Math.floor(sx / 3);
+    var gy = Math.floor(sy / 3);
     var csx = Math.floor(sx / 3) * 3;
     var csy = Math.floor(sy / 3) * 3;
+    
     if (guessed[csx][csy].length == 3)
     for (let i = 0; i < 3; i++) {
         for (let j = 0; j < 3; j++) {
@@ -241,9 +253,15 @@ function onGuess() {
                 result = "hit";
                 correct[csx + i][csy + j] = val;
                 current[csx + i][csy + j] = val;
+                correctGrid[gx][gy].push(val);
             } else {
+                var rowStartX = csx + i;
+                var rowStartY = csy;
+                var colStartX = csx;
+                var colStartY = csy + j;
+                // console.log([rowStartX, rowStartY, "x", colStartX, colStartY, " for ", csx+i, csy+j].join(""));
                 for (let ti = 0; ti < 3; ti++) {
-                    if (val == answer[csx + ti][csy] || val == answer[csx][csy + ti]) {
+                    if (val == answer[rowStartX][rowStartY+ ti] || val == answer[colStartX + ti][colStartY]) {
                         result = "close";
                     }
                 }
@@ -317,4 +335,9 @@ function shuffleArray(array) {
     }
 
     return array;
+}
+
+function reveal() {
+    correct = answer;
+    draw();
 }
