@@ -1,0 +1,20 @@
+.btnsParent {
+    display: flex;
+    text-align: center;
+    flex-wrap: wrap;
+    justify-content: center;
+    margin: 1em;
+}
+
+.btnsChild {
+    text-align: center;
+    width: fit-content;
+    margin: 0.2em;
+}
+
+input {
+    font-size: large;
+    width: 3em;
+    height: 3em;
+    font-weight: bold;
+}
