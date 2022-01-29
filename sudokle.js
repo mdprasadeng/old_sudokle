@@ -1,108 +1,132 @@
 var state = {
     width: 360 * 2,
     height: 360 * 2,
-    unitSize: 80
+    unitSize: 80,
+    answer: grid(),
+    guess: [],
+    currentGuess: [],
+    correctGuess: [],
+    sx : 0,
+    sy: 0,
 };
 
-var cell = grid();
-var sx = 0; sy = 0; si = 0; sj = 0;
-var guess = [];
-var currentGuess = [];
+var textAt = state.unitSize/6;
+var lineAt = state.unitSize/2;
+var unitSize = state.unitSize;
+
+var guessPath = [];
+guessPath.push({
+    tx : textAt,
+    ty : textAt,
+    path: [ 
+        {x: 0,y: 0},
+        {x: lineAt,y: 0},
+        {x: 0,y: lineAt}
+    ]
+});
+guessPath.push({
+    tx : unitSize - textAt,
+    ty : textAt,
+    path: [ 
+        {x: unitSize,y: 0},
+        {x: unitSize,y: lineAt},
+        {x: unitSize - lineAt,y: 0}
+    ]
+});
+guessPath.push({
+    tx : textAt,
+    ty : unitSize - textAt,
+    path: [ 
+        {x: 0,y: unitSize},
+        {x: lineAt,y: unitSize},
+        {x: 0,y: unitSize - lineAt}
+    ]
+});
+guessPath.push({
+    tx : unitSize - textAt,
+    ty : unitSize - textAt,
+    path: [ 
+        {x: unitSize,y: unitSize},
+        {x: unitSize - lineAt,y: unitSize},
+        {x: unitSize,y: unitSize - lineAt}
+    ]
+});
+
 for (let i = 0; i < 9; i++) {
-    guess[i] = [];
-    currentGuess[i] = [];
+    state.guess[i] = [];
+    state.currentGuess[i] = [];
+    state.correctGuess[i] = [];
     for (let j = 0; j < 9; j++) {
-        guess[i][j] = [];
-        currentGuess[i][j] = -1;
+        state.guess[i][j] = [];
+        state.currentGuess[i][j] = -1;
+        state.correctGuess[i][j] = -1;
     }
 }
 
 function OnGuess() {
+    var csx = Math.floor(state.sx / 3) * 3;
+    var csy = Math.floor(state.sy / 3) * 3;
+
     for (let i = 0; i < 3; i++) {
         for (let j = 0; j < 3; j++) {
-            if (currentGuess[sx * 3 + i][sy * 3 + j] == -1) {
+            if (state.currentGuess[csx + i][csy + j] == -1) {
+                console.log("")
                 return;
             }
         }
     }
 
+
+
     for (let i = 0; i < 3; i++) {
         for (let j = 0; j < 3; j++) {
-            if (currentGuess[sx * 3 + i][sy * 3 + j] == cell[sx * 3 + i][sy * 3 + j]) {
-                guess[sx*3 +i][sy*3+ j].push({ val: currentGuess[sx * 3 + i][sy * 3 + j], result: "hit" })
+            var val = state.currentGuess[csx + i][csy + j];
+            state.currentGuess[csx + i][csy + j] = -1; 
+            if (val == state.answer[csx + i][csy + j]) {
+                state.guess[csx + i][csy + j].push({ val: val, result: "hit" })
+                state.correctGuess[csx + i][csy + j] = val; 
+                state.currentGuess[csx + i][csy + j] = val; 
             } else {
                 var close = false;
                 for (let ti = 0; ti < 3; ti++) {
-                    for (let tj = 0; tj < 3; tj++) {
-                        if (currentGuess[sx * 3 + i][sy * 3 + j] == cell[sx * 3 + ti][sy * 3 + tj]) {
+                        if (val == state.answer[csx+ ti][csy] || val == state.answer[csx][csy + ti]) {
                             close = true;
-                            guess[sx*3 +i][sy*3+ j].push({ val: currentGuess[sx * 3 + i][sy * 3 + j], resutl: "close" })
+                            state.guess[csx + i][csy + j].push({ val: val, result: "close" })
                         }
-                    }
+                    
                 }
                 if (!close) {
-                    guess[sx*3 +i][sy*3+ j].push({ val: currentGuess[sx * 3 + i][sy * 3 + j], resutl: "miss" })
+                    state.guess[csx + i][csy + j].push({ val: val, result: "miss" })
                 }
             }
         }
     }
-    console.log(guess);
     reDraw();
 }
 
 function onLoad() {
     reDraw();
     document.onkeydown = keyDown;
-    document.onkeyup = keyUp;
 }
 
-var isShiftDown = false;
 
 function keyDown(key) {
     switch (key.key) {
         case "ArrowDown":
-            if (isShiftDown) {
-                sy++;
-                sy = sy % 3;
-                reDraw();
-            } else {
-                sj++;
-                sj = sj % 3;
-                reDraw();
-            }
+            state.sy = (state.sy + 1 + 9) % 9;
+            reDraw();
             break;
         case "ArrowUp":
-            if (isShiftDown) {
-                sy--;
-                sy = Math.abs((3 + sy) % 3);
-                reDraw();
-            } else {
-                sj--;
-                sj = Math.abs((3 + sj) % 3);
-                reDraw();
-            }
+            state.sy = (state.sy - 1 + 9) % 9;
+            reDraw();
             break;
         case "ArrowRight":
-            if (isShiftDown) {
-                sx++;
-                sx = sx % 3;
-                reDraw();
-            } else {
-                si++;
-                si = si % 3;
-                reDraw();
-            }
+            state.sx = (state.sx + 1) % 9;
+            reDraw();
             break;
         case "ArrowLeft":
-            if (isShiftDown) {
-                sx--;
-                sx = Math.abs((3 + sx) % 3);
-                reDraw();
-            } else {
-                si--;
-                si = Math.abs((3 + si) % 3);
-                reDraw();
-            }
+            state.sx = (state.sx - 1 + 9) % 9;
+            reDraw();
             break;
         case "Shift":
             isShiftDown = true;
@@ -111,300 +135,147 @@ function keyDown(key) {
             OnGuess();
             break;
         case "1":
-            currentGuess[sx * 3 + si][sy * 3 + sj] = 1;
+            state.currentGuess[state.sx][state.sy] = 1;
             reDraw();
             break;
         case "2":
-            currentGuess[sx * 3 + si][sy * 3 + sj] = 2;
+            state.currentGuess[state.sx][state.sy] = 2;
             reDraw();
             break;
         case "3":
-            currentGuess[sx * 3 + si][sy * 3 + sj] = 3;
+            state.currentGuess[state.sx][state.sy] = 3;
             reDraw();
             break;
         case "4":
-            currentGuess[sx * 3 + si][sy * 3 + sj] = 4;
+            state.currentGuess[state.sx][state.sy] = 4;
             reDraw();
             break;
         case "5":
-            currentGuess[sx * 3 + si][sy * 3 + sj] = 5;
+            state.currentGuess[state.sx][state.sy] = 5;
             reDraw();
             break;
         case "6":
-            currentGuess[sx * 3 + si][sy * 3 + sj] = 6;
+            state.currentGuess[state.sx][state.sy] = 6;
             reDraw();
             break;
         case "7":
-            currentGuess[sx * 3 + si][sy * 3 + sj] = 7;
+            state.currentGuess[state.sx][state.sy] = 7;
             reDraw();
             break;
         case "8":
-            currentGuess[sx * 3 + si][sy * 3 + sj] = 8;
+            state.currentGuess[state.sx][state.sy] = 8;
             reDraw();
             break;
         case "9":
-            currentGuess[sx * 3 + si][sy * 3 + sj] = 9;
+            state.currentGuess[state.sx][state.sy] = 9;
             reDraw();
             break;
     }
 }
 
-function keyUp(key) {
-    if (key.key == "Shift") {
-        isShiftDown = false;
-    }
-}
 
 function reDraw() {
     var canvas = document.getElementById('playarea');
     if (canvas.getContext) {
         var ctx = canvas.getContext('2d');
+        ctx.textBaseline = 'middle'; 
+        ctx.textAlign = 'center'; 
         ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-        for (let x = 0; x < 3; x++) {
-            for (let y = 0; y < 3; y++) {
-                if (sx == x && sy == y) {
-                    ctx.globalAlpha = 1;
-                    drawSudokuMiniGrid(x, y, ctx);
-                } else {
-                    ctx.globalAlpha = 0.2;
-                    drawSudokuMiniGrid(x, y, ctx);
-                }
-            }
-        }
+        draw9x9At(0, 0, ctx);
     } else {
         console.log("no canvas")
     }
 }
 
-function drawSudokuMiniGrid(x, y, ctx) {
-    var drawX = state.unitSize * x * 3;
-    var drawY = state.unitSize * y * 3;
+function draw9x9At(x, y, ctx) {
+    ctx.translate(x, y);
 
-    for (let i = 0; i <= 3; i++) {
-        if (i == 3 || i == 0) {
-            ctx.lineWidth = 3;
-        } else {
-            ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.lineWidth = 5;
+    ctx.rect(0, 0, 9 * state.unitSize, 9 * state.unitSize);
+    ctx.stroke()
+
+    for (let i=0; i < 3; i++) {
+        for (let j=0; j < 3; j++) {
+            if (i == Math.floor(state.sx / 3) && j == Math.floor(state.sy / 3)) {
+                ctx.globalAlpha = 1;
+                draw3x3At(i, j , ctx, true);
+            } else {
+               ctx.globalAlpha = 0.2; 
+               draw3x3At(i, j , ctx, false);    
+            }
         }
-
-        ctx.beginPath();
-        ctx.moveTo(drawX + state.unitSize * i, drawY + 0);
-        ctx.lineTo(drawX + state.unitSize * i, drawY + state.height / 3);
-        ctx.stroke();
     }
-    for (let i = 0; i <= 3; i++) {
-        if (i == 3 || i == 0) {
-            ctx.lineWidth = 3;
-        } else {
-            ctx.lineWidth = 1;
-        }
-        ctx.beginPath();
-        ctx.moveTo(drawX + 0, drawY + state.unitSize * i, 0);
-        ctx.lineTo(drawX + state.width / 3, drawY + state.unitSize * i);
-        ctx.stroke();
-    }
-
     
-
-    var fontSize = 30;
-    ctx.font = fontSize + 'px monospace';
-    ctx.textBaseline = 'middle';
-    ctx.textAlign = "center";
-    for (let i = 0; i < 3; i++) {
-        for (let j = 0; j < 3; j++) {
-            if (si == i && sj == j && x == sx && y == sy) {
-
-                ctx.fillStyle = 'lightyellow';
-                ctx.fillRect(drawX + state.unitSize * i + 2, drawY + state.unitSize * j + 2, state.unitSize - 2, state.unitSize - 2);
-                ctx.fillStyle = 'black';
-            }
-            ctx.fillText(currentGuess[x * 3 + i][y * 3 + j], drawX + state.unitSize / 2 + state.unitSize * i, drawY + state.unitSize / 2 + state.unitSize * j);
-
-        }
-    }
-
-        var fontSize = 12;
-    ctx.font = fontSize + 'px monospace';
-
-    for (let i = 0; i < 3; i++) {
-        for (let j = 0; j < 3; j++) {
-            var g = guess[x*3 + i][y*3 + j];
-            if (g.length > 0) {
-                if (g[0].result == "hit") {
-                    ctx.fillStyle = 'green';
-                } else if (g[0].result == "close")  {
-                    ctx.fillStyle = 'yellow';
-                } else {
-                    ctx.fillStyle = 'black';
-                }
-                ctx.fillText(g[0].val, drawX + state.unitSize / 2 + state.unitSize * i - state.unitSize / 3, drawY + state.unitSize / 2 + state.unitSize * j - state.unitSize / 3);
-            }
-            if (g.length > 1) {
-                if (g[1].result == "hit") {
-                    ctx.fillStyle = 'green';
-                } else if (g[1].result == "close")  {
-                    ctx.fillStyle = 'yellow';
-                } else {
-                    ctx.fillStyle = 'black';
-                }
-
-                ctx.fillText(g[1].val, drawX + state.unitSize / 2 + state.unitSize * i + state.unitSize / 3, drawY + state.unitSize / 2 + state.unitSize * j - state.unitSize / 3);
-            }
-            if (g.length > 2) {
-                if (g[2].result == "hit") {
-                    ctx.fillStyle = 'green';
-                } else if (g[2].result == "close")  {
-                    ctx.fillStyle = 'yellow';
-                } else {
-                    ctx.fillStyle = 'black';
-                }
-                ctx.fillText(g[2].val, drawX + state.unitSize / 2 + state.unitSize * i - state.unitSize / 3, drawY + state.unitSize / 2 + state.unitSize * j + state.unitSize / 3);
-            }
-            if (g.length > 3) {
-                if (g[3].result == "hit") {
-                    ctx.fillStyle = 'green';
-                } else if (g[3].result == "close")  {
-                    ctx.fillStyle = 'yellow';
-                } else {
-                    ctx.fillStyle = 'black';
-                }
-                ctx.fillText(g[3].val, drawX + state.unitSize / 2 + state.unitSize * i + state.unitSize / 3, drawY + state.unitSize / 2 + state.unitSize * j + state.unitSize / 3);
-            }
-        }
-    }
-
-
-    // var diagWidth = 0.5;
-    // ctx.lineWidth = diagWidth;
-    // // top left 1
-    // for (let i = 0; i < 3; i++) {
-    //     ctx.beginPath();
-    //     ctx.moveTo(drawX + 0, drawY + state.unitSize / 2 + state.unitSize * i);
-    //     ctx.lineTo(drawX + state.unitSize / 2 + state.unitSize * i, drawY + 0);
-    //     ctx.stroke();
-    // }
-
-    // // top left 2
-    // for (let i = 0; i < 3; i++) {
-    //     ctx.beginPath();
-    //     ctx.moveTo(drawX + state.unitSize / 2 + state.unitSize * i, drawY + (state.height / 3));
-    //     ctx.lineTo(drawX + (state.width / 3), drawY + state.unitSize / 2 + state.unitSize * i);
-    //     ctx.stroke();
-    // }
-
-    // // top right 1
-    // for (let i = 0; i < 3; i++) {
-    //     ctx.beginPath();
-    //     ctx.moveTo(drawX + state.unitSize / 2 + state.unitSize * i, drawY + 0);
-    //     ctx.lineTo(drawX + (state.width / 3), drawY + state.unitSize / 2 + state.unitSize * (3 - 1 - i));
-    //     ctx.stroke();
-    // }
-
-    // //top right 2
-    // for (let i = 0; i < 3; i++) {
-    //     ctx.beginPath();
-    //     ctx.moveTo(drawX + 0, drawY + state.unitSize / 2 + state.unitSize * i);
-    //     ctx.lineTo(drawX + state.unitSize / 2 + state.unitSize * (3 - 1 - i), drawY + (state.height / 3));
-    //     ctx.stroke();
-    // }
-
-    // for (let i = 0; i < 3; i++) {
-    //     for (let j = 0; j < 3; j++) {
-    //         ctx.fillText(cell[i][j], state.unitSize / 2 + state.unitSize * i + state.unitSize / 3, state.unitSize / 2 + state.unitSize * j - state.unitSize / 3);
-    //         ctx.fillText(cell[i][j], state.unitSize / 2 + state.unitSize * i + state.unitSize / 3, state.unitSize / 2 + state.unitSize * j + state.unitSize / 3);
-
-    //     }
-    // }
-
+    ctx.translate(-1 * x, -1* y );   
 }
 
-function drawSudoku(ctx) {
-    for (let i = 0; i <= 9; i++) {
-        if (i == 0 || i == 9) {
-            ctx.lineWidth = 10;
-        }
-        else if (i == 3 || i == 6) {
-            ctx.lineWidth = 3;
-        } else {
-            ctx.lineWidth = 1;
-        }
+function draw3x3At(x, y, ctx, selected) {
+    ctx.translate(x * 3 * state.unitSize, y * 3 * state.unitSize);
 
-        ctx.beginPath();
-        ctx.moveTo(state.unitSize * i, 0);
-        ctx.lineTo(state.unitSize * i, state.height);
-        ctx.stroke();
-    }
-    for (let i = 0; i <= 9; i++) {
-        if (i == 0 || i == 9) {
-            ctx.lineWidth = 10;
-        }
-        else if (i == 3 || i == 6) {
-            ctx.lineWidth = 3;
-        } else {
-            ctx.lineWidth = 1;
-        }
-        ctx.beginPath();
-        ctx.moveTo(0, state.unitSize * i, 0);
-        ctx.lineTo(state.width, state.unitSize * i);
-        ctx.stroke();
-    }
+    ctx.beginPath();
+    ctx.lineWidth = 3;
+    ctx.rect(0, 0, 3 * state.unitSize, 3 * state.unitSize);
+    ctx.stroke()
 
-    var diagWidth = 0.5;
-    ctx.lineWidth = diagWidth;
-    // top left 1
-    for (let i = 0; i < 9; i++) {
-        ctx.beginPath();
-        ctx.moveTo(0, state.unitSize / 2 + state.unitSize * i);
-        ctx.lineTo(state.unitSize / 2 + state.unitSize * i, 0);
-        ctx.stroke();
-    }
-
-    // top left 2
-    for (let i = 0; i < 9; i++) {
-        ctx.beginPath();
-        ctx.moveTo(state.unitSize / 2 + state.unitSize * i, state.height);
-        ctx.lineTo(state.width, state.unitSize / 2 + state.unitSize * i);
-        ctx.stroke();
-    }
-
-    // top right 1
-    for (let i = 0; i < 9; i++) {
-        ctx.beginPath();
-        ctx.moveTo(state.unitSize / 2 + state.unitSize * i, 0);
-        ctx.lineTo(state.width, state.unitSize / 2 + state.unitSize * (9 - 1 - i));
-        ctx.stroke();
-    }
-
-    //top right 2
-    for (let i = 0; i < 9; i++) {
-        ctx.beginPath();
-        ctx.moveTo(0, state.unitSize / 2 + state.unitSize * i);
-        ctx.lineTo(state.unitSize / 2 + state.unitSize * (9 - 1 - i), state.height);
-        ctx.stroke();
-    }
-
-    var fontSize = 30;
-    ctx.font = fontSize + 'px monospace';
-    ctx.textBaseline = 'middle';
-    ctx.textAlign = "center";
-    for (let i = 0; i < 9; i++) {
-        for (let j = 0; j < 9; j++) {
-            ctx.fillText(cell[i][j], state.unitSize / 2 + state.unitSize * i, state.unitSize / 2 + state.unitSize * j);
+    for (let i=0; i < 3; i++) {
+        for (let j=0; j < 3; j++) {
+            draw1x1At(i, j , ctx, selected, x, y);
         }
     }
+    
+    ctx.translate(-1 * x * 3 * state.unitSize, -1 * y * 3 * state.unitSize);
+}
 
-    var fontSize = 12;
-    ctx.font = fontSize + 'px monospace';
-    for (let i = 0; i < 9; i++) {
-        for (let j = 0; j < 9; j++) {
-            // ctx.fillText(cell[i][j], state.unitSize / 2 + state.unitSize * i - state.unitSize / 3, state.unitSize / 2 + state.unitSize * j - state.unitSize / 3);
-            // ctx.fillText(cell[i][j], state.unitSize / 2 + state.unitSize * i - state.unitSize / 3, state.unitSize / 2 + state.unitSize * j + state.unitSize / 3);
-            // ctx.fillText(cell[i][j], state.unitSize / 2 + state.unitSize * i + state.unitSize / 3, state.unitSize / 2 + state.unitSize * j - state.unitSize / 3);
-            // ctx.fillText(cell[i][j], state.unitSize / 2 + state.unitSize * i + state.unitSize / 3, state.unitSize / 2 + state.unitSize * j + state.unitSize / 3);
+function draw1x1At(x,y, ctx, selected, px, py) {
+    ctx.translate(x * state.unitSize, y * state.unitSize);
+    {
+        var guesses = state.guess[px*3 + x][py*3 + y];
+        for (let i=0; i < Math.min(4, guesses.length); i++) {
+            var gPath  = guessPath[i];
+            var guess = guesses[i];
+            if (guess.result == "hit") {
+                ctx.fillStyle = "rgba(144, 238, 144, 150)";
+            }
+            if (guess.result == "close") {
+                ctx.fillStyle = "rgba(211,211,211, 150)";
+            }
+            if (guess.result == "miss") {
+                ctx.fillStyle = "rgba(255, 255, 255, 150)";
+            } 
 
+            ctx.beginPath()
+            ctx.moveTo(gPath.path[0].x, gPath.path[0].y)
+            ctx.lineTo(gPath.path[1].x, gPath.path[1].y)
+            ctx.lineTo(gPath.path[2].x, gPath.path[2].y)
+            ctx.closePath();
+            ctx.stroke();
+            ctx.fill();
+            
+            ctx.fillStyle = "black"
+            ctx.font = "15px Arial"; // To change font size and type
+            ctx.fillText(guess.val, gPath.tx, gPath.ty)
         }
+
+    }
+    ctx.beginPath();
+    ctx.lineWidth = 1;
+    ctx.rect(0, 0, state.unitSize, state.unitSize);
+    ctx.stroke()
+    
+    if (selected && x == (state.sx % 3) && y == (state.sy % 3)) {
+        ctx.fillStyle = "yellow"
+        ctx.fill();   
     }
 
+    var currentGuess = state.currentGuess[px*3+x][py*3+y];
+    if (currentGuess > 0) {
+        ctx.fillStyle = "black"
+        ctx.font = "25px Arial"; // To change font size and type
+        ctx.fillText(currentGuess, unitSize/2, unitSize/2);
+    }
+    
+
+    ctx.translate(-1 * x * state.unitSize, -1 * y * state.unitSize);
 }
 

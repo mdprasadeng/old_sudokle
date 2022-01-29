@@ -61,9 +61,9 @@ function grid() {
         } 
     }
 
-    for (let i = 0; i < 9; i++) {
-        console.log(filled[i].join("|"))
-    }
+    // for (let i = 0; i < 9; i++) {
+    //     console.log(filled[i].join("|"))
+    // }
     return filled;
 }
 
