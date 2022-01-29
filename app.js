@@ -13,6 +13,7 @@ var correct = [];
 var current = [];
 var guessed = [];
 var correctGrid = [];
+var guessCounter = 0;
 
 
 class Guess {
@@ -141,7 +142,7 @@ function draw() {
         points: GetSquarePath(),
         scaleBy: dim.unit,
         offset: newPoint({ x: dim.unit * sx, y: dim.unit * sy }),
-        opacity: 1,
+        opacity: 0.66,
         fillColor: "yellow"
     });
     DrawPath(ctx, path);
@@ -273,6 +274,9 @@ function onGuess() {
         }
     }
     draw();
+
+    guessCounter++;
+    document.getElementById("gCounter").innerHTML = "Total Guesses : " + guessCounter;
 
     if (allNotGreen && guessed[csx][csy].length == 4) {
         alert("GameOver");
