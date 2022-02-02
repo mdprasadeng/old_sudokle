@@ -1,7 +1,7 @@
 
 var HIT_COLOR = "rgba(144, 238, 144, 150)";
-var MISS_COLOR = "rgba(211,211,211, 150)";
-var CLOSE_COLOR = "rgba(255, 255, 255, 150)";
+var MISS_COLOR = "rgba(255, 255, 255, 150)";
+var CLOSE_COLOR = "rgba(211,211,211, 150)";
 
 class Path {
     constructor(points, lineWidth, fillColor, scaleBy, offset, opacity) {

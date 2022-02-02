@@ -165,7 +165,7 @@ function checkGrid(guessGrid, answerGrid, gridSize = new GridXY(0, 8, 0, 8)) {
             } else {
                 var subGridXY = get3x3GridXY(i, j);
                 var rows = [answerGrid[subGridXY.startX][j], answerGrid[subGridXY.startX + 1][j], answerGrid[subGridXY.startX + 2][j]];
-                var cols = [answerGrid[j][subGridXY.startY], answerGrid[j][subGridXY.startY + 1], answerGrid[j][subGridXY.startY + 2]];
+                var cols = [answerGrid[i][subGridXY.startY], answerGrid[i][subGridXY.startY + 1], answerGrid[i][subGridXY.startY + 2]];
                 if (rows.indexOf(guessGrid[i][j]) >= 0 || cols.indexOf(guessGrid[i][j]) >= 0) {
                     check = CLOSE;
                 }     

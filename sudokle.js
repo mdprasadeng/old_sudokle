@@ -181,8 +181,8 @@ function draw(state) {
                 var checkedGrid = state.checkedGrids[g];
                 var isGuessMade = !!guessedGrid[i][j];
                 var isGuessValueAlreadyHit = isGuessMade && correctGuesses.indexOf(guessedGrid[i][j]) >= 0;
-                var isGuessValuewAlreadyGuessed = isGuessMade && allGuesses.indexOf(guessedGrid[i][j]) >= 0;
-                if (isGuessMade && !isGuessValueAlreadyHit && !isGuessValuewAlreadyGuessed) {
+                var isGuessValueAlreadyGuessed = isGuessMade && allGuesses.indexOf(guessedGrid[i][j]) >= 0;
+                if (isGuessMade  && !isGuessValueAlreadyGuessed) {
                     allGuesses.push(guessedGrid[i][j]);
                     allChecks.push(checkedGrid[i][j]);
                 }
