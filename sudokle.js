@@ -124,7 +124,7 @@ function draw(state) {
         for (let j = 0; j < 9; j++) {
             var hitCell = state.hitsGrid[i][j];
 
-            var fillColor = hitCell ? "rgba(144, 238, 144, 150)" : null;
+            var fillColor = hitCell ? HIT_COLOR : null;
 
             var path = newPath({
                 lineWidth: 1,
@@ -140,8 +140,8 @@ function draw(state) {
         }
     }
 
-     //Draw Selection
-     var path = newPath({
+    //Draw Selection
+    var path = newPath({
         lineWidth: 1,
         points: GetSquarePath(),
         scaleBy: dim.unit,
@@ -161,31 +161,63 @@ function draw(state) {
         }
     }
 
-    // //Draw9x9 guesses
-    // for (let i = 0; i < 9; i++) {
-    //     for (let j = 0; j < 9; j++) {
-    //         var gx = Math.floor(i/3);
-    //         var gy = Math.floor(j/3);
-    //         var correctGuesses = correctGrid[gx][gy];
+    //Draw9x9 guesses
+    for (let i = 0; i < 9; i++) {
+        for (let j = 0; j < 9; j++) {
+            var correctGuesses = [];
+            var subGrid = get3x3GridXY(i, j);
+            for (var x = subGrid.startX; x < subGrid.endX; x++) {
+                for (var y = subGrid.startY; y < subGrid.endY; y++) {
+                    if (state.hitsGrid[x][y]) {
+                        correctGuesses.push(state.hitsGrid[x][y]);
+                    }
+                }
+            }
             
-    //         for (var g = 1; g <= guessed[i][j].length; g++) {
-    //             var guess = guessed[i][j][g-1];
-    //             if (guess.result == "hit") continue;
-    //             if (correctGuesses.indexOf(guess.val) >= 0) continue;    
-    //             var path = newPath({
-    //                 lineWidth: 1,
-    //                 points: GetGuessPath(g),
-    //                 offset: GetGuessOffset(g, i, j),
-    //                 scaleBy: dim.unit / 2,
-    //                 opacity: 1,
-    //                 fillColor: guess.getFillColor()
-    //             });
-    //             DrawPath(ctx, path);
-    //             DrawText(ctx, guess.val, 20, GetGuessTextAt(g, i, j))
-    //         }
+            var allGuesses = [];
+            var allChecks = [];
+            for (var g = 0; g < state.guessedGrids.length; g++) {
+                var guessedGrid = state.guessedGrids[g];
+                var checkedGrid = state.checkedGrids[g];
+                var isGuessMade = !!guessedGrid[i][j];
+                var isGuessValueAlreadyHit = isGuessMade && correctGuesses.indexOf(guessedGrid[i][j]) >= 0;
+                var isGuessValuewAlreadyGuessed = isGuessMade && allGuesses.indexOf(guessedGrid[i][j]) >= 0;
+                if (isGuessMade && !isGuessValueAlreadyHit && !isGuessValuewAlreadyGuessed) {
+                    allGuesses.push(guessedGrid[i][j]);
+                    allChecks.push(checkedGrid[i][j]);
+                }
+            }
 
-    //     }
-    // }
+            for (var g = 1; g <= allGuesses.length; g++) {
+                var guess = allGuesses[g - 1];
+                var check = allChecks[g - 1];
+                var color;
+                switch (check) {
+                    case HIT:
+                        color = HIT_COLOR;
+                        break;
+                    case CLOSE:
+                        color = CLOSE_COLOR;
+                        break;
+                    case MISS:
+                        color = MISS_COLOR;
+                        break;
+                }
+
+                var path = newPath({
+                    lineWidth: 1,
+                    points: GetGuessPath(g),
+                    offset: GetGuessOffset(g, i, j),
+                    scaleBy: dim.unit / 2,
+                    opacity: 1,
+                    fillColor: color
+                });
+                DrawPath(ctx, path);
+                DrawText(ctx, guess, 20, GetGuessTextAt(g, i, j))
+            }
+
+        }
+    }
 
     //Draw3x3
     for (let i = 0; i < 3; i++) {

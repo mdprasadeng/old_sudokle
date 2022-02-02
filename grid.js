@@ -5,6 +5,7 @@ const HIT = "H";
 const MISS = "M";
 const CLOSE = "C";
 
+
 class GridXY {
     constructor(startX, endX, startY, endY) {
         this.startX = startX
