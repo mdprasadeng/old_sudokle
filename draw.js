@@ -118,29 +118,3 @@ function DrawText(ctx, text, fontSize, at) {
     ctx.font = fontSize + "px serif"; 
     ctx.fillText(text, at.x, at.y);
 }
-
-
-//remove
-
-
-function drawNumpad(x, y) {
-
-    var segment = (Math.PI * 1.5)/ 9;
-    var startAngle  = Math.PI * (0.75);
-
-    ctx.save();
-    var angle = Math.PI/9;
-    ctx.lineWidth = 1;
-    ctx.fillStyle = "yellow";
-    for (let i=0; i<9 ; i++) {
-        ctx.beginPath();
-        ctx.arc(x, y, dim.kr2, startAngle + i * segment, startAngle + segment + i * segment);
-        ctx.arc(x, y, dim.kr1, startAngle + segment + i * segment, startAngle + i * segment, true);
-        ctx.closePath();
-        ctx.stroke();
-        ctx.fill();
-
-    }
-    ctx.restore();
-    
-}
