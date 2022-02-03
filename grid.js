@@ -1,5 +1,5 @@
 
-var ALL_ARRAY = [1,2,3,4,5,6,7,8,9];
+var ALL_ARRAY = [1, 2, 3, 4, 5, 6, 7, 8, 9];
 
 const HIT = "H";
 const MISS = "M";
@@ -7,7 +7,7 @@ const CLOSE = "C";
 
 
 class GridXY {
-    constructor(startX, endX, startY, endY) {
+    constructor(startX = 0, endX = 8, startY = 0, endY = 8) {
         this.startX = startX
         this.startY = startY
         this.endX = endX
@@ -16,9 +16,9 @@ class GridXY {
 }
 
 function get3x3GridXY(x, y) {
-    var startX = Math.floor(x/3) * 3;
-    var startY = Math.floor(y/3) * 3;
-    return new GridXY(startX, startX + 3, startY, startY + 3);
+    var startX = Math.floor(x / 3) * 3;
+    var startY = Math.floor(y / 3) * 3;
+    return new GridXY(startX, startX + 2, startY, startY + 2);
 }
 
 
@@ -44,7 +44,7 @@ function fillGrid(filledGrid = null, gridXY = new GridXY(0, 8, 0, 8)) {
     var endY = gridXY.endY;
 
     var guessGrid = newGrid(filledGrid);
-    
+
     var blackListed = [];
     var fillHistory = [];
 
@@ -99,18 +99,20 @@ function fillGrid(filledGrid = null, gridXY = new GridXY(0, 8, 0, 8)) {
         if (!guessGrid[x][y]) {
             var options = findOptions(x, y);
 
+
             if (options.length == 0) {
                 if (fillHistory.length == 0) {
-                    console.warn("No history to go back");
-                    return null;
+                    options = ALL_ARRAY;
                 }
-                blackListed[x][y] = [];
-                var lastEntry = fillHistory.pop();
-                x = lastEntry.x;
-                y = lastEntry.y;
-                blackListed[x][y].push(guessGrid[x][y]);
-                guessGrid[x][y] = undefined;
-                continue;
+                else {
+                    blackListed[x][y] = [];
+                    var lastEntry = fillHistory.pop();
+                    x = lastEntry.x;
+                    y = lastEntry.y;
+                    blackListed[x][y].push(guessGrid[x][y]);
+                    guessGrid[x][y] = undefined;
+                    continue;
+                }
             }
             var option = options[Math.floor(Math.random() * options.length)];
             guessGrid[x][y] = option;
@@ -132,32 +134,32 @@ function fillGrid(filledGrid = null, gridXY = new GridXY(0, 8, 0, 8)) {
 }
 
 function clearGrid(grid, gridSize, clearWithGrid) {
-    for (let i= gridSize.startX; i<= gridSize.endX; i++) {
-        for (let j= gridSize.startY; j<= gridSize.endY; j++) {
-            grid[i][j] == undefined
+    for (let i = gridSize.startX; i <= gridSize.endX; i++) {
+        for (let j = gridSize.startY; j <= gridSize.endY; j++) {
+            grid[i][j] = undefined;
             if (clearWithGrid && clearWithGrid[i] && clearWithGrid[i][j]) {
                 grid[i][j] = clearWithGrid[i][j];
             }
-        } 
+        }
     }
 }
 
 function logGrid(grid) {
-    for (let i=0; i<9; i++) {
+    for (let i = 0; i < 9; i++) {
         var line = []
-        for (let j=0; j<9; j++) {
-            
+        for (let j = 0; j < 9; j++) {
+
             line.push(grid[j][i] || "X");
         }
-        console.log("|"+ line.join("|") + "|")
+        console.log("|" + line.join("|") + "|")
     }
     console.log("*****************************************");
 }
 
 function checkGrid(guessGrid, answerGrid, gridSize = new GridXY(0, 8, 0, 8)) {
     var checkedGrid = newGrid();
-    for (let i= gridSize.startX; i<= gridSize.endX; i++) {
-        for (let j= gridSize.startY; j<= gridSize.endY; j++) {
+    for (let i = gridSize.startX; i <= gridSize.endX; i++) {
+        for (let j = gridSize.startY; j <= gridSize.endY; j++) {
             if (!guessGrid[i][j]) continue;
             var check = MISS;
             if (guessGrid[i][j] == answerGrid[i][j]) {
@@ -168,10 +170,10 @@ function checkGrid(guessGrid, answerGrid, gridSize = new GridXY(0, 8, 0, 8)) {
                 var cols = [answerGrid[i][subGridXY.startY], answerGrid[i][subGridXY.startY + 1], answerGrid[i][subGridXY.startY + 2]];
                 if (rows.indexOf(guessGrid[i][j]) >= 0 || cols.indexOf(guessGrid[i][j]) >= 0) {
                     check = CLOSE;
-                }     
+                }
             }
-            checkedGrid[i][j] = check; 
-        } 
+            checkedGrid[i][j] = check;
+        }
     }
     return checkedGrid;
 }

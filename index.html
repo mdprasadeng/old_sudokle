@@ -12,7 +12,7 @@
 </head>
 <body onload="onLoad()">
     <div style="margin: 0 auto; display: table;">
-    <canvas id = "playarea" width="720" height="720">
+    <canvas id = "playarea" width="630" height="630">
     </canvas>
 
     </div>
@@ -47,21 +47,44 @@
 
     </div>
     <div class="btnsParent">
+        
         <div class="btnsChild">
-            <input type="button" onclick="onClear()" value="X" />
+            <input type="button" class="medium" onclick="onUndo()" value="⟲" />
         </div>
         <div class="btnsChild">
-            <input id="rndbtn" type="button" onclick="onRandom()" value="🎲" />
+            <input type="button" class="medium" onclick="onClear1x1()" value="X" />
         </div>
         <div class="btnsChild">
-            <input id="tickbtn" type="button" onclick="onGuess()" value="✔" />
+            <input id="rndbtn" class="medium" type="button" onclick="onRandom3x3()" value="🎲" />
+        </div>
+        <div class="btnsChild">
+            <input id="rndbtn" class="large" type="button" onclick="onRandom9x9()" value="🎲" />
+        </div>
+        <div class="btnsChild">
+            <input id="rndbtn" class="large" type="button" onclick="onGuess()" value="👁" aria-label="Reveal"/>
         </div>
     </div>
-    <div class="btnsParent">
-        <div class="btnsChild" id="gCounter" style="font-size: xx-large;">
-            Total Guesses : 0
-            
-        </div>
+    <div class="stats">
+        <div class="stat">
+            <div class= "greenstat" id="greenstat" >
+                0
+            </div>
+        </div> 
+        <div class="stat">
+            <div class= "graystat" id="graystat" >
+                0
+            </div>
+        </div> 
+        <div class="stat">
+            <div class= "whitestat" id="whitestat" >
+                0
+            </div>
+        </div> 
+        <div class="stat">
+            <div class= "guessstat" >
+                👁:<span id="tickstat">0 </span>
+            </div>
+        </div> 
     </div>
     
 </body>

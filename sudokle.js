@@ -1,7 +1,7 @@
 var ctx;
 var canvas;
 var dim = {
-    unit: 80
+    unit: 70
 }
 
 var sx = 0;
@@ -23,9 +23,11 @@ class State {
         this.workingGrid = newGrid(); //has working values
         this.guessedGrids = []; //has array of guesses made
         this.checkedGrids = [];
+        this.workingGridHistory = [];
         this.hitCount = 0;
         this.missCount = 0;
         this.closeCount = 0;
+
     }
 }
 
@@ -74,7 +76,7 @@ function init() {
 function onLoad() {
     canvas = document.getElementById('playarea');
     canvas.addEventListener("mousedown", onMouseDown);
-
+    document.addEventListener("keydown", onKeyDown)
     if (canvas.getContext) {
         ctx = canvas.getContext('2d');
         ctx.textBaseline = 'middle';
@@ -94,8 +96,9 @@ function toPoint(evt) {
 
 function onMouseDown(evt) {
     downAt = toPoint(evt);
-    sx = Math.floor(downAt.x / dim.unit);
-    sy = Math.floor(downAt.y / dim.unit);
+    state.sx = Math.floor(downAt.x / dim.unit);
+    state.sy = Math.floor(downAt.y / dim.unit);
+    draw(state);
 }
 
 function GetGuessOffset(g, i, j) {
@@ -166,14 +169,14 @@ function draw(state) {
         for (let j = 0; j < 9; j++) {
             var correctGuesses = [];
             var subGrid = get3x3GridXY(i, j);
-            for (var x = subGrid.startX; x < subGrid.endX; x++) {
-                for (var y = subGrid.startY; y < subGrid.endY; y++) {
+            for (var x = subGrid.startX; x <= subGrid.endX; x++) {
+                for (var y = subGrid.startY; y <= subGrid.endY; y++) {
                     if (state.hitsGrid[x][y]) {
                         correctGuesses.push(state.hitsGrid[x][y]);
                     }
                 }
             }
-            
+
             var allGuesses = [];
             var allChecks = [];
             for (var g = 0; g < state.guessedGrids.length; g++) {
@@ -182,13 +185,13 @@ function draw(state) {
                 var isGuessMade = !!guessedGrid[i][j];
                 var isGuessValueAlreadyHit = isGuessMade && correctGuesses.indexOf(guessedGrid[i][j]) >= 0;
                 var isGuessValueAlreadyGuessed = isGuessMade && allGuesses.indexOf(guessedGrid[i][j]) >= 0;
-                if (isGuessMade  && !isGuessValueAlreadyGuessed) {
+                if (isGuessMade && !isGuessValueAlreadyGuessed && !isGuessValueAlreadyHit) {
                     allGuesses.push(guessedGrid[i][j]);
                     allChecks.push(checkedGrid[i][j]);
                 }
             }
 
-            for (var g = 1; g <= allGuesses.length; g++) {
+            for (var g = 1; g <= Math.min(allGuesses.length, 4); g++) {
                 var guess = allGuesses[g - 1];
                 var check = allChecks[g - 1];
                 var color;
@@ -242,9 +245,104 @@ function draw(state) {
 
 }
 
+function drawStats(state) {
+    document.getElementById("greenstat").innerHTML = state.hitCount;
+    document.getElementById("graystat").innerHTML = state.closeCount;
+    document.getElementById("whitestat").innerHTML = state.missCount;
+    document.getElementById("tickstat").innerHTML = state.guessedGrids.length;
+    
+}
 
-function test() {
-    randFill(state);
+function onClear1x1() {
+    var gridXY = new GridXY(state.sx, state.sx, state.sy, state.sy);
+    clearState(gridXY);
+}
+
+function onClear3x3() {
+    var gridXY = get3x3GridXY(state.sx, state.sy)
+    clearState(gridXY);
+}
+
+function onClear9x9() {
+    clearState(new GridXY())
+}
+
+function onRandom1x1() {
+    var gridXY = new GridXY(state.sx, state.sx, state.sy, state.sy);
+    randFillState(gridXY);
+}
+
+function onRandom3x3() {
+    var gridXY = get3x3GridXY(state.sx, state.sy)
+    randFillState(gridXY);
+}
+
+function onRandom9x9() {
+    randFillState(new GridXY());
+}
+
+function onGuess() {
     check(state);
     draw(state);
+    drawStats(state);
+}
+
+function clearState(gridXY) {
+    state.workingGridHistory.push(newGrid(state.workingGrid));
+    clearGrid(state.workingGrid, gridXY, state.hitsGrid);
+    draw(state);
+}
+
+function randFillState(gridXY) {
+    state.workingGridHistory.push(newGrid(state.workingGrid));
+    state.workingGrid = fillGrid(state.workingGrid, gridXY);
+    draw(state);
+}
+
+function onPressed(value) {
+    state.workingGridHistory.push(newGrid(state.workingGrid));
+    state.workingGrid[state.sx][state.sy] = value;
+    draw(state)
+}
+
+function onUndo() {
+    if (state.workingGridHistory.length != 0) {
+        state.workingGrid = state.workingGridHistory.pop();
+    }
+    draw(state);
+}
+
+function onKeyDown(key) {
+    switch (key.key) {
+        case "ArrowDown":
+            state.sy = (state.sy + 1) % 9 
+            draw(state);
+            break;
+        case "ArrowUp":
+            state.sy = (state.sy - 1 + 9) % 9 
+            draw(state);
+            break;
+        case "ArrowLeft":
+            state.sx = (state.sx - 1 + 9) % 9 
+            draw(state);
+            break;
+        case "ArrowRight":
+            state.sx = (state.sx + 1) % 9 
+            draw(state);
+            break;
+        case "1":
+        case "2":
+        case "3":
+        case "4":
+        case "5":
+        case "6":
+        case "7":
+        case "8":
+        case "9":
+            onPressed(key.key);
+            break;
+        case "Enter":
+            onGuess();
+            break;
+    }
 }
