@@ -1,0 +1,97 @@
+.btnsParent {
+    display: flex;
+    text-align: center;
+    flex-wrap: wrap;
+    justify-content: center;
+    margin: 1em;
+    align-items: center;
+}
+
+.btnsChild {
+    text-align: center;
+    width: fit-content;
+    margin: 0.2em;
+    align-items: center;
+}
+
+input {
+    font-size: large;
+    width: 3em;
+    height: 3em;
+    font-weight: bold;
+    white-space: normal;
+}
+
+.small {
+    font-size: small;  
+}
+
+.medium {
+    font-size: medium;  
+}
+.large {
+    font-size: x-large;
+}
+
+.stats {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+}
+
+.stat {
+    justify-self: center;
+}
+
+.graystat {
+    background-color: gray;
+    font-size: xx-large;
+    display: flex;
+    justify-content: center; /* align horizontal */
+    align-items: center; /* align vertical */
+    width: 2em;
+    height: 2em;
+    border-style: solid;
+    border-color: black;
+    margin: 0.2em;
+
+}
+
+.whitestat {
+    background-color: white;
+    font-size: xx-large;
+    display: flex;
+    justify-content: center; /* align horizontal */
+    align-items: center; /* align vertical */
+    width: 2em;
+    height: 2em;
+    border-style: solid;
+    border-color: black;
+    margin: 0.2em;
+}
+
+.greenstat {
+    background-color: lightgreen;
+    font-size: xx-large;
+    display: flex;
+    justify-content: center; /* align horizontal */
+    align-items: center; /* align vertical */
+    width: 2em;
+    height: 2em;
+    border-style: solid;
+    border-color: black;
+    margin: 0.2em;
+}
+
+.guessstat {
+    background-color: white;
+    font-size: xx-large;
+    display: flex;
+    justify-content: center; /* align horizontal */
+    align-items: center; /* align vertical */
+    width: 3em;
+    height: 2em;
+    border-color: black;
+    margin: 0.2em; 
+}
