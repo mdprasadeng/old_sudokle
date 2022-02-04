@@ -53,8 +53,8 @@ input {
     display: flex;
     justify-content: center; /* align horizontal */
     align-items: center; /* align vertical */
-    width: 1.5em;
-    height: 1.5em;
+    width: 1.8em;
+    height: 1.8em;
     border-style: solid;
     border-color: black;
     margin: 0.2em;
@@ -67,8 +67,8 @@ input {
     display: flex;
     justify-content: center; /* align horizontal */
     align-items: center; /* align vertical */
-    width: 1.5em;
-    height: 1.5em;
+    width: 1.8em;
+    height: 1.8em;
     border-style: solid;
     border-color: black;
     margin: 0.2em;
@@ -80,8 +80,8 @@ input {
     display: flex;
     justify-content: center; /* align horizontal */
     align-items: center; /* align vertical */
-    width: 1.5em;
-    height: 1.5em;
+    width: 1.8em;
+    height: 1.8em;
     border-style: solid;
     border-color: black;
     margin: 0.2em;
@@ -94,7 +94,7 @@ input {
     justify-content: center; /* align horizontal */
     align-items: center; /* align vertical */
     width: 2em;
-    height: 1.5em;
+    height: 1.8em;
     border-color: black;
     margin: 0.2em; 
 }

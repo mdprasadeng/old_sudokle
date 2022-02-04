@@ -183,16 +183,19 @@ function draw(state) {
         }
     }
 
-    //Draw Selection
-    var path = newPath({
-        lineWidth: 1,
-        points: GetSquarePath(),
-        scaleBy: dim.unit,
-        offset: newPoint({ x: dim.unit * state.sx, y: dim.unit * state.sy }),
-        opacity: 0.66,
-        fillColor: "yellow"
-    });
-    DrawPath(ctx, path);
+    if (state.hitCount != 81) {
+        //Draw Selection
+        var path = newPath({
+            lineWidth: 1,
+            points: GetSquarePath(),
+            scaleBy: dim.unit,
+            offset: newPoint({ x: dim.unit * state.sx, y: dim.unit * state.sy }),
+            opacity: 0.66,
+            fillColor: "yellow"
+        });
+        DrawPath(ctx, path);
+
+    }
 
     for (let i = 0; i < 9; i++) {
         for (let j = 0; j < 9; j++) {
@@ -255,7 +258,7 @@ function draw(state) {
                 var offset = GetGuessOffset(g, i, j);
                 var path = newPath({
                     lineWidth: 1,
-                    points: GetGuessPath(g, dim.unit/2, 1),
+                    points: GetGuessPath(g, dim.unit / 2, 1),
                     offset: offset,
                     scaleBy: 1,
                     opacity: 1,
