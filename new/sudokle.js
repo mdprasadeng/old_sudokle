@@ -107,15 +107,24 @@ function GetGuessOffset(g, i, j) {
         case 2: return newPoint({ x: dim.unit * i + dim.unit, y: dim.unit * j });
         case 3: return newPoint({ x: dim.unit * i, y: dim.unit * j + dim.unit });
         case 4: return newPoint({ x: dim.unit * i + dim.unit, y: dim.unit * j + dim.unit });
+        case 5: return newPoint({ x: dim.unit * i, y: dim.unit * j });
+        case 6: return newPoint({ x: dim.unit * i + dim.unit, y: dim.unit * j });
+        case 7: return newPoint({ x: dim.unit * i, y: dim.unit * j + dim.unit });
+        case 8: return newPoint({ x: dim.unit * i + dim.unit, y: dim.unit * j + dim.unit });
     }
 }
 
 function GetGuessTextAt(g, i, j) {
     switch (g) {
-        case 1: return newPoint({ x: dim.unit * i + dim.unit / 6, y: dim.unit * j + dim.unit / 6 });
-        case 2: return newPoint({ x: dim.unit * (i + 1) - dim.unit / 6, y: dim.unit * j + dim.unit / 6 });
-        case 3: return newPoint({ x: dim.unit * i + dim.unit / 6, y: dim.unit * (j + 1) - dim.unit / 6 });
-        case 4: return newPoint({ x: dim.unit * (i + 1) - dim.unit / 6, y: dim.unit * (j + 1) - dim.unit / 6 });
+        case 1: return newPoint({ x: dim.unit * i + dim.unit / 7, y: dim.unit * j + dim.unit / 6 });
+        case 2: return newPoint({ x: dim.unit * (i + 1) - dim.unit / 7, y: dim.unit * j + dim.unit / 6 });
+        case 3: return newPoint({ x: dim.unit * i + dim.unit / 7, y: dim.unit * (j + 1) - dim.unit / 6 });
+        case 4: return newPoint({ x: dim.unit * (i + 1) - dim.unit / 7, y: dim.unit * (j + 1) - dim.unit / 6 });
+        
+        case 5: return newPoint({ x: dim.unit * i + dim.unit / 2, y: dim.unit * j + dim.unit / 7 });
+        case 6: return newPoint({ x: dim.unit * (i + 1) - dim.unit / 7, y: dim.unit * j + dim.unit / 2 });
+        case 7: return newPoint({ x: dim.unit * i + dim.unit / 7, y: dim.unit * (j + 1) - dim.unit / 2 });
+        case 8: return newPoint({ x: dim.unit * (i + 1) - dim.unit / 2, y: dim.unit * (j + 1) - dim.unit / 7 });
     }
 }
 
@@ -158,7 +167,7 @@ function draw(state) {
         for (let j = 0; j < 9; j++) {
             var workingCell = state.workingGrid[i][j];
             if (workingCell) {
-                DrawText(ctx, workingCell, 40, newPoint({ x: dim.unit * i + dim.unit / 2, y: dim.unit * j + dim.unit / 2 }))
+                DrawText(ctx, workingCell, 32, newPoint({ x: dim.unit * i + dim.unit / 2, y: dim.unit * j + dim.unit / 2 }))
             }
 
         }
@@ -191,7 +200,7 @@ function draw(state) {
                 }
             }
 
-            for (var g = 1; g <= Math.min(allGuesses.length, 4); g++) {
+            for (var g = 1; g <= allGuesses.length; g++) {
                 var guess = allGuesses[g - 1];
                 var check = allChecks[g - 1];
                 var color;
@@ -216,7 +225,7 @@ function draw(state) {
                     fillColor: color
                 });
                 DrawPath(ctx, path);
-                DrawText(ctx, guess, 20, GetGuessTextAt(g, i, j))
+                DrawText(ctx, guess, g > 4 ? 15 : 20, GetGuessTextAt(g, i, j))
             }
 
         }

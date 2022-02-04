@@ -37,6 +37,11 @@ function GetGuessPath(i) {
         case 2: return GetGuessPath2();
         case 3: return GetGuessPath3();
         case 4: return GetGuessPath4();
+        case 5: return GetGuessPath5();
+        case 6: return GetGuessPath6();
+        case 7: return GetGuessPath7();
+        case 8: return GetGuessPath8();
+
     }
 }
 
@@ -70,6 +75,40 @@ function GetGuessPath4() {
         new Point(0, 0),
         new Point(-1, 0),
         new Point(0, -1)
+    ];
+}
+
+function GetGuessPath5() {
+    return [
+        new Point(1, 0),
+        new Point(0.5, 0.5),
+        new Point(1.5, 0.5)
+    ];
+}
+
+
+function GetGuessPath6() {
+    return [
+        new Point(-0.5, 0.5),
+        new Point(0, 1),
+        new Point(-0.5, 1.5)
+    ];
+}
+
+function GetGuessPath7() {
+    return [
+        new Point(0, -1),
+        new Point(0.5, -0.5),
+        new Point(0.5, -1.5)
+    ];
+}
+
+
+function GetGuessPath8() {
+    return [
+        new Point(-1, 0),
+        new Point(-0.5, -0.5),
+        new Point(-1.5, -0.5)
     ];
 }
 
