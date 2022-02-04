@@ -74,7 +74,20 @@ function init() {
 
 
 function onLoad() {
+    var screenWidth = window.screen.availWidth;
+    var screenHeight = window.screen.availHeight;
+
+    var canvasSize;
+    if (screenWidth > screenHeight) {
+        canvasSize = screenHeight * 0.6;
+    } else {
+        canvasSize = screenWidth;
+    }
+    canvasSize = Math.floor(canvasSize/9) * 9;
+    dim.unit = Math.floor(canvasSize / 9);
     canvas = document.getElementById('playarea');
+    canvas.width = canvasSize;
+    canvas.height = canvasSize;
     canvas.addEventListener("mousedown", onMouseDown);
     document.addEventListener("keydown", onKeyDown)
     if (canvas.getContext) {
@@ -83,6 +96,8 @@ function onLoad() {
         ctx.textAlign = 'center';
         init()
         draw(state);
+    } else {
+        alert("Sorry, HTML Canvas is needed");
     }
 }
 
@@ -167,7 +182,7 @@ function draw(state) {
         for (let j = 0; j < 9; j++) {
             var workingCell = state.workingGrid[i][j];
             if (workingCell) {
-                DrawText(ctx, workingCell, 32, newPoint({ x: dim.unit * i + dim.unit / 2, y: dim.unit * j + dim.unit / 2 }))
+                DrawText(ctx, workingCell, 1.5, newPoint({ x: dim.unit * i + dim.unit / 2, y: dim.unit * j + dim.unit / 2 }))
             }
 
         }
@@ -200,6 +215,11 @@ function draw(state) {
                 }
             }
 
+            // if (i == 4 && j == 4) {
+            //     allGuesses = [1,2,3,4,5,6,7,8];
+            //     allChecks = [HIT, MISS, HIT, MISS, HIT, MISS, HIT, MISS];
+            // }
+
             for (var g = 1; g <= allGuesses.length; g++) {
                 var guess = allGuesses[g - 1];
                 var check = allChecks[g - 1];
@@ -225,7 +245,7 @@ function draw(state) {
                     fillColor: color
                 });
                 DrawPath(ctx, path);
-                DrawText(ctx, guess, g > 4 ? 15 : 20, GetGuessTextAt(g, i, j))
+                DrawText(ctx, guess, g > 4 ? 0.7 : 0.9, GetGuessTextAt(g, i, j))
             }
 
         }
@@ -235,7 +255,7 @@ function draw(state) {
     for (let i = 0; i < 3; i++) {
         for (let j = 0; j < 3; j++) {
             var path = newPath({
-                lineWidth: 3,
+                lineWidth: 1,
                 points: GetSquarePath(),
                 scaleBy: dim.unit * 3,
                 offset: newPoint({ x: dim.unit * i * 3, y: dim.unit * j * 3 })
@@ -244,13 +264,13 @@ function draw(state) {
         }
     }
 
-    //Draw 9x9
-    var path = newPath({
-        lineWidth: 10,
-        points: GetSquarePath(),
-        scaleBy: dim.unit * 9
-    });
-    DrawPath(ctx, path);
+    // //Draw 9x9
+    // var path = newPath({
+    //     lineWidth: 5,
+    //     points: GetSquarePath(),
+    //     scaleBy: dim.unit * 9
+    // });
+    // DrawPath(ctx, path);
 
 }
 
@@ -291,9 +311,26 @@ function onRandom9x9() {
 }
 
 function onGuess() {
+    
+    var someGuessesAreMade = false;
+    for (let i = 0; i < 9; i++) {
+        for (let j = 0; j < 9; j++) {
+            if (state.workingGrid[i][j] && !state.hitsGrid[i][j]) {
+                someGuessesAreMade = true;
+            }
+        }
+    }
+    if (!someGuessesAreMade) return;
     check(state);
     draw(state);
     drawStats(state);
+    if (state.hitCount == 81) {
+        var elems = document.getElementsByClassName("btnsParent");
+        for (let i = 0; i < elems.length; i++) {
+            const elem = elems[i];
+            elem.style.display = "none"
+        }
+    }
 }
 
 function clearState(gridXY) {

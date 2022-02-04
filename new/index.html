@@ -4,16 +4,18 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="sudokle.css"/>
-    <script src="draw.js" type="text/javascript" ></script>
-    <script src="grid.js" type="text/javascript" ></script>
-    <script src="sudokle.js" type="text/javascript" ></script>
+    <link rel="stylesheet" href="sudokle.css" />
+    <script src="draw.js" type="text/javascript"></script>
+    <script src="grid.js" type="text/javascript"></script>
+    <script src="sudokle.js" type="text/javascript"></script>
 </head>
-<body onload="onLoad()">
+
+<body onload="onLoad()" style="margin: 0;">
     <h2 style="text-align: center;">Sudokle</h2>
+
     <div style="margin: 0 auto; display: table;">
-    <canvas id = "playarea" width="630" height="630">
-    </canvas>
+        <canvas id="playarea" style="border: black; border-style: solid;">
+        </canvas>
 
     </div>
     <div class="btnsParent">
@@ -47,7 +49,7 @@
 
     </div>
     <div class="btnsParent">
-        
+
         <div class="btnsChild">
             <input type="button" class="medium" onclick="onUndo()" value="⟲" />
         </div>
@@ -61,30 +63,30 @@
             <input id="rndbtn" class="large" type="button" onclick="onRandom9x9()" value="🎲" />
         </div>
         <div class="btnsChild">
-            <input id="rndbtn" class="large" type="button" onclick="onGuess()" value="👁" aria-label="Reveal"/>
+            <input id="rndbtn" class="large" type="button" onclick="onGuess()" value="👁" aria-label="Reveal" />
         </div>
     </div>
     <div class="stats">
         <div class="stat">
-            <div class= "greenstat" id="greenstat" >
+            <div class="greenstat" id="greenstat">
                 0
             </div>
-        </div> 
+        </div>
         <div class="stat">
-            <div class= "graystat" id="graystat" >
+            <div class="graystat" id="graystat">
                 0
             </div>
-        </div> 
+        </div>
         <div class="stat">
-            <div class= "whitestat" id="whitestat" >
+            <div class="whitestat" id="whitestat">
                 0
             </div>
-        </div> 
+        </div>
         <div class="stat">
-            <div class= "guessstat" >
+            <div class="guessstat">
                 👁:<span id="tickstat">0 </span>
             </div>
-        </div> 
+        </div>
     </div>
-    
+
 </body>

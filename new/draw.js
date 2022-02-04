@@ -159,6 +159,6 @@ function DrawPath(ctx, path) {
 }
 
 function DrawText(ctx, text, fontSize, at) {
-    ctx.font = fontSize + "px serif"; 
+    ctx.font = fontSize + "em serif"; 
     ctx.fillText(text, at.x, at.y);
 }

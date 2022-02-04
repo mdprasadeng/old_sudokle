@@ -3,7 +3,6 @@
     text-align: center;
     flex-wrap: wrap;
     justify-content: center;
-    margin: 1em;
     align-items: center;
 }
 
@@ -46,12 +45,12 @@ input {
 
 .graystat {
     background-color: gray;
-    font-size: xx-large;
+    font-size: x-large;
     display: flex;
     justify-content: center; /* align horizontal */
     align-items: center; /* align vertical */
-    width: 2em;
-    height: 2em;
+    width: 1.5em;
+    height: 1.5em;
     border-style: solid;
     border-color: black;
     margin: 0.2em;
@@ -60,12 +59,12 @@ input {
 
 .whitestat {
     background-color: white;
-    font-size: xx-large;
+    font-size: x-large;
     display: flex;
     justify-content: center; /* align horizontal */
     align-items: center; /* align vertical */
-    width: 2em;
-    height: 2em;
+    width: 1.5em;
+    height: 1.5em;
     border-style: solid;
     border-color: black;
     margin: 0.2em;
@@ -73,12 +72,12 @@ input {
 
 .greenstat {
     background-color: lightgreen;
-    font-size: xx-large;
+    font-size: x-large;
     display: flex;
     justify-content: center; /* align horizontal */
     align-items: center; /* align vertical */
-    width: 2em;
-    height: 2em;
+    width: 1.5em;
+    height: 1.5em;
     border-style: solid;
     border-color: black;
     margin: 0.2em;
@@ -86,12 +85,12 @@ input {
 
 .guessstat {
     background-color: white;
-    font-size: xx-large;
+    font-size: large;
     display: flex;
     justify-content: center; /* align horizontal */
     align-items: center; /* align vertical */
-    width: 3em;
-    height: 2em;
+    width: 2em;
+    height: 1.5em;
     border-color: black;
     margin: 0.2em; 
 }
