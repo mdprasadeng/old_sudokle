@@ -309,6 +309,7 @@ function randFillState(gridXY) {
 }
 
 function onPressed(value) {
+    value = Number(value);
     state.workingGridHistory.push(newGrid(state.workingGrid));
     state.workingGrid[state.sx][state.sy] = value;
     draw(state)
