@@ -55,6 +55,7 @@ function check(state) {
             }
         }
     }
+    state.workingGridHistory = [];
     state.workingGrid = newGrid(state.hitsGrid);
 }
 
