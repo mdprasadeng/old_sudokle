@@ -231,10 +231,10 @@ function draw(state) {
                 }
             }
 
-            // if (i == 4 && j == 4) {
-            //     allGuesses = [1,2,3,4,5,6,7,8];
-            //     allChecks = [HIT, MISS, HIT, MISS, HIT, MISS, HIT, MISS];
-            // }
+            if (i == 4 && j == 4) {
+                allGuesses = [1,2,3,4,5,6,7,8];
+                allChecks = [HIT, MISS, HIT, MISS, HIT, MISS, HIT, MISS];
+            }
 
             for (var g = 1; g <= allGuesses.length; g++) {
                 var guess = allGuesses[g - 1];
@@ -253,13 +253,11 @@ function draw(state) {
                 }
 
                 var offset = GetGuessOffset(g, i, j);
-                offset.x += g % 2 == 0 ? -1 : 1;
-                offset.y += ((g % 4) > 0 && (g % 4) < 3) ? 1 : -1;
                 var path = newPath({
                     lineWidth: 1,
-                    points: GetGuessPath(g),
+                    points: GetGuessPath(g, dim.unit/2, 1),
                     offset: offset,
-                    scaleBy: dim.unit / 2,
+                    scaleBy: 1,
                     opacity: 1,
                     fillColor: color
                 });

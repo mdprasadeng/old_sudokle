@@ -31,84 +31,84 @@ function newPoint({ x = 0, y = 0 }) {
     return new Point(x, y);
 }
 
-function GetGuessPath(i) {
+function GetGuessPath(i, unit, off) {
     switch (i){
-        case 1: return GetGuessPath1();
-        case 2: return GetGuessPath2();
-        case 3: return GetGuessPath3();
-        case 4: return GetGuessPath4();
-        case 5: return GetGuessPath5();
-        case 6: return GetGuessPath6();
-        case 7: return GetGuessPath7();
-        case 8: return GetGuessPath8();
+        case 1: return GetGuessPath1(unit, off);
+        case 2: return GetGuessPath2(unit, off);
+        case 3: return GetGuessPath3(unit, off);
+        case 4: return GetGuessPath4(unit, off);
+        case 5: return GetGuessPath5(unit, off);
+        case 6: return GetGuessPath6(unit, off);
+        case 7: return GetGuessPath7(unit, off);
+        case 8: return GetGuessPath8(unit, off);
 
     }
 }
 
 
-function GetGuessPath1() {
+function GetGuessPath1(unit, off) {
     return [
-        new Point(0, 0),
-        new Point(1, 0),
-        new Point(0, 1)
+        new Point(off, off),
+        new Point(unit -off, off),
+        new Point(off, unit -off)
     ];
 }
 
-function GetGuessPath2() {
+function GetGuessPath2(unit, off) {
     return [
-        new Point(0, 0),
-        new Point(-1, 0),
-        new Point(0, 1)
+        new Point(-off, off),
+        new Point(-unit + off, off),
+        new Point(-off, unit -off)
     ];
 }
 
-function GetGuessPath3() {
+function GetGuessPath3(unit, off) {
     return [
-        new Point(0, 0),
-        new Point(1, 0),
-        new Point(0, -1)
+        new Point(off, -off),
+        new Point(unit -off, -off),
+        new Point(off, -unit +off)
     ];
 }
 
-function GetGuessPath4() {
+function GetGuessPath4(unit, off) {
     return [
-        new Point(0, 0),
-        new Point(-1, 0),
-        new Point(0, -1)
+        new Point(-off, -off),
+        new Point(-unit +off, -off),
+        new Point(-off, -unit +off)
     ];
 }
 
-function GetGuessPath5() {
+function GetGuessPath5(unit, off) {
     return [
-        new Point(1, 0),
-        new Point(0.5, 0.5),
-        new Point(1.5, 0.5)
-    ];
-}
-
-
-function GetGuessPath6() {
-    return [
-        new Point(-0.5, 0.5),
-        new Point(0, 1),
-        new Point(-0.5, 1.5)
-    ];
-}
-
-function GetGuessPath7() {
-    return [
-        new Point(0, -1),
-        new Point(0.5, -0.5),
-        new Point(0.5, -1.5)
+        new Point(unit, off),
+        new Point(0.5 * unit, 0.5 * unit),
+        new Point(1.5 * unit, 0.5 * unit)
     ];
 }
 
 
-function GetGuessPath8() {
+function GetGuessPath6(unit, off) {
     return [
-        new Point(-1, 0),
-        new Point(-0.5, -0.5),
-        new Point(-1.5, -0.5)
+        new Point(-0.5*unit, 0.5*unit),
+        new Point(-off, unit),
+        new Point(-0.5*unit, 1.5*unit)
+    ];
+}
+
+function GetGuessPath7(unit, off) {
+    return [
+        new Point(off, -unit),
+        new Point(0.5*unit, -0.5*unit),
+        new Point(0.5*unit, -1.5*unit)
+    ];
+}
+
+
+function GetGuessPath8(unit, off) {
+    return [
+        new Point(-unit, -off),
+        new Point(-0.5*unit, -0.5*unit),
+        new Point(-1.5*unit, -0.5*unit)
     ];
 }
 
