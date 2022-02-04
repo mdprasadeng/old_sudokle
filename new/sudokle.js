@@ -101,6 +101,7 @@ function onLoad() {
             console.log("Font loaded");
 
             ctx = canvas.getContext('2d');
+            ctx.translate(0.5, 0.5);
             ctx.textBaseline = 'middle';
             ctx.textAlign = 'center';
             init()
