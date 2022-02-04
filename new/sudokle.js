@@ -231,10 +231,10 @@ function draw(state) {
                 }
             }
 
-            if (i == 4 && j == 4) {
-                allGuesses = [1,2,3,4,5,6,7,8];
-                allChecks = [HIT, MISS, HIT, MISS, HIT, MISS, HIT, MISS];
-            }
+            // if (i == 4 && j == 4) {
+            //     allGuesses = [1,2,3,4,5,6,7,8];
+            //     allChecks = [HIT, MISS, HIT, MISS, HIT, MISS, HIT, MISS];
+            // }
 
             for (var g = 1; g <= allGuesses.length; g++) {
                 var guess = allGuesses[g - 1];
