@@ -81,7 +81,7 @@ function onLoad() {
     if (screenWidth > screenHeight) {
         canvasSize = screenHeight * 0.6;
     } else {
-        canvasSize = screenWidth;
+        canvasSize = screenWidth - 10;
     }
     canvasSize = Math.floor(canvasSize/9) * 9;
     dim.unit = Math.floor(canvasSize / 9);
