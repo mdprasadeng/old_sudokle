@@ -159,6 +159,6 @@ function DrawPath(ctx, path) {
 }
 
 function DrawText(ctx, text, fontSize, at) {
-    ctx.font = fontSize + "em serif"; 
+    ctx.font = fontSize + "em Roboto"; 
     ctx.fillText(text, at.x, at.y);
 }

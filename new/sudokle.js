@@ -83,7 +83,7 @@ function onLoad() {
     } else {
         canvasSize = screenWidth - 10;
     }
-    canvasSize = Math.floor(canvasSize/9) * 9;
+    canvasSize = Math.floor(canvasSize / 9) * 9;
     dim.unit = Math.floor(canvasSize / 9);
     canvas = document.getElementById('playarea');
     canvas.width = canvasSize;
@@ -91,14 +91,27 @@ function onLoad() {
     canvas.addEventListener("mousedown", onMouseDown);
     document.addEventListener("keydown", onKeyDown)
     if (canvas.getContext) {
-        ctx = canvas.getContext('2d');
-        ctx.textBaseline = 'middle';
-        ctx.textAlign = 'center';
-        init()
-        draw(state);
+        let myFont = new FontFace(
+            "Roboto",
+            "url(./roboto.woff2)"
+        );
+
+        myFont.load().then((font) => {
+            document.fonts.add(font);
+            console.log("Font loaded");
+
+            ctx = canvas.getContext('2d');
+            ctx.textBaseline = 'middle';
+            ctx.textAlign = 'center';
+            init()
+            draw(state);
+        });
+
+
     } else {
         alert("Sorry, HTML Canvas is needed");
     }
+
 }
 
 function toPoint(evt) {
@@ -135,7 +148,7 @@ function GetGuessTextAt(g, i, j) {
         case 2: return newPoint({ x: dim.unit * (i + 1) - dim.unit / 7, y: dim.unit * j + dim.unit / 6 });
         case 3: return newPoint({ x: dim.unit * i + dim.unit / 7, y: dim.unit * (j + 1) - dim.unit / 6 });
         case 4: return newPoint({ x: dim.unit * (i + 1) - dim.unit / 7, y: dim.unit * (j + 1) - dim.unit / 6 });
-        
+
         case 5: return newPoint({ x: dim.unit * i + dim.unit / 2, y: dim.unit * j + dim.unit / 7 });
         case 6: return newPoint({ x: dim.unit * (i + 1) - dim.unit / 7, y: dim.unit * j + dim.unit / 2 });
         case 7: return newPoint({ x: dim.unit * i + dim.unit / 7, y: dim.unit * (j + 1) - dim.unit / 2 });
@@ -158,7 +171,7 @@ function draw(state) {
                 points: GetSquarePath(),
                 scaleBy: dim.unit,
                 offset: newPoint({ x: dim.unit * i, y: dim.unit * j }),
-                opacity: !fillColor ? 0.1 : 1,
+                opacity: !fillColor ? 0.2 : 1,
                 fillColor: fillColor
             });
 
@@ -237,7 +250,7 @@ function draw(state) {
                 }
 
                 var path = newPath({
-                    lineWidth: 1,
+                    lineWidth: 0.5,
                     points: GetGuessPath(g),
                     offset: GetGuessOffset(g, i, j),
                     scaleBy: dim.unit / 2,
@@ -279,7 +292,7 @@ function drawStats(state) {
     document.getElementById("graystat").innerHTML = state.closeCount;
     document.getElementById("whitestat").innerHTML = state.missCount;
     document.getElementById("tickstat").innerHTML = state.guessedGrids.length;
-    
+
 }
 
 function onClear1x1() {
@@ -311,7 +324,7 @@ function onRandom9x9() {
 }
 
 function onGuess() {
-    
+
     var someGuessesAreMade = false;
     for (let i = 0; i < 9; i++) {
         for (let j = 0; j < 9; j++) {
@@ -362,19 +375,19 @@ function onUndo() {
 function onKeyDown(key) {
     switch (key.key) {
         case "ArrowDown":
-            state.sy = (state.sy + 1) % 9 
+            state.sy = (state.sy + 1) % 9
             draw(state);
             break;
         case "ArrowUp":
-            state.sy = (state.sy - 1 + 9) % 9 
+            state.sy = (state.sy - 1 + 9) % 9
             draw(state);
             break;
         case "ArrowLeft":
-            state.sx = (state.sx - 1 + 9) % 9 
+            state.sx = (state.sx - 1 + 9) % 9
             draw(state);
             break;
         case "ArrowRight":
-            state.sx = (state.sx + 1) % 9 
+            state.sx = (state.sx + 1) % 9
             draw(state);
             break;
         case "1":
