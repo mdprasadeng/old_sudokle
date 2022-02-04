@@ -84,10 +84,12 @@ function onLoad() {
         canvasSize = screenWidth - 10;
     }
     canvasSize = Math.floor(canvasSize / 9) * 9;
-    dim.unit = Math.floor(canvasSize / 9);
     canvas = document.getElementById('playarea');
+    canvasSize = canvas.width;
     canvas.width = canvasSize;
     canvas.height = canvasSize;
+    dim.unit = Math.floor(canvasSize / 9);
+
     canvas.addEventListener("mousedown", onMouseDown);
     document.addEventListener("keydown", onKeyDown)
     if (canvas.getContext) {
@@ -172,7 +174,7 @@ function draw(state) {
                 points: GetSquarePath(),
                 scaleBy: dim.unit,
                 offset: newPoint({ x: dim.unit * i, y: dim.unit * j }),
-                opacity: !fillColor ? 0.2 : 1,
+                opacity: !fillColor ? 0.4 : 1,
                 fillColor: fillColor
             });
 
@@ -250,15 +252,18 @@ function draw(state) {
                         break;
                 }
 
+                var offset = GetGuessOffset(g, i, j);
+                offset.x += g % 2 == 0 ? -1 : 1;
+                offset.y += ((g % 4) > 0 && (g % 4) < 3) ? 1 : -1;
                 var path = newPath({
-                    lineWidth: 0.5,
+                    lineWidth: 1,
                     points: GetGuessPath(g),
-                    offset: GetGuessOffset(g, i, j),
+                    offset: offset,
                     scaleBy: dim.unit / 2,
                     opacity: 1,
                     fillColor: color
                 });
-                DrawPath(ctx, path);
+                DrawPath(ctx, path, false);
                 DrawText(ctx, guess, g > 4 ? 0.7 : 0.9, GetGuessTextAt(g, i, j))
             }
 
@@ -269,7 +274,7 @@ function draw(state) {
     for (let i = 0; i < 3; i++) {
         for (let j = 0; j < 3; j++) {
             var path = newPath({
-                lineWidth: 1,
+                lineWidth: 2,
                 points: GetSquarePath(),
                 scaleBy: dim.unit * 3,
                 offset: newPoint({ x: dim.unit * i * 3, y: dim.unit * j * 3 })

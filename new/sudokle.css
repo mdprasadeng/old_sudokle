@@ -5,7 +5,7 @@ body {
 .btnsParent {
     display: flex;
     text-align: center;
-    flex-wrap: wrap;
+    flex-wrap:nowrap;
     justify-content: center;
     align-items: center;
 }

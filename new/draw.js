@@ -130,7 +130,7 @@ function GetRectPath(width, height) {
     ];
 }
 
-function DrawPath(ctx, path) {
+function DrawPath(ctx, path, dontstroke = false) {
     ctx.lineWidth = path.lineWidth;
     ctx.globalAlpha = path.opacity;
     ctx.translate(path.offset.x, path.offset.y);
@@ -145,7 +145,9 @@ function DrawPath(ctx, path) {
         }
     }
     ctx.closePath();
-    ctx.stroke();
+    if (!dontstroke) {
+        ctx.stroke();
+    }
     if (path.fillColor) {
         ctx.save();
         ctx.fillStyle = path.fillColor;
