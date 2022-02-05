@@ -1,4 +1,12 @@
 Wordle colors
+Put Sudokle in the grid
+Generate a number everyday
 Put stats in the grid
 Sum up misses
 FTUE
+Everything in canvas
+Post Game Streak and Distribution
+
+Gray - #787c7e
+Green- #6aaa64
+Yellow- #c9b458
