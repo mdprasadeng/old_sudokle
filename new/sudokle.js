@@ -69,12 +69,16 @@ function logState(state) {
 }
 
 var state;
+var gif;
 function init() {
     state = new State();
 }
 
 
 function onLoad() {
+
+    
+
     var screenWidth = window.screen.availWidth;
     var screenHeight = window.screen.availHeight;
 
@@ -90,6 +94,14 @@ function onLoad() {
     canvas.width = canvasSize;
     canvas.height = canvasSize;
     dim.unit = Math.floor(canvasSize / 9);
+
+    gif = new GIF({
+        workers: 2,
+        quality: 10,
+        width: canvasSize,
+        height: canvasSize,
+        debug: true
+    });
 
     canvas.addEventListener("mousedown", onMouseDown);
     document.addEventListener("keydown", onKeyDown)
@@ -163,6 +175,10 @@ function GetGuessTextAt(g, i, j) {
 
 function draw(state) {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.save();
+    ctx.fillStyle = "white";
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    ctx.restore();
     //Draw9x9
     for (let i = 0; i < 9; i++) {
         for (let j = 0; j < 9; j++) {
@@ -344,8 +360,16 @@ function onGuess() {
     if (!someGuessesAreMade) return;
     check(state);
     draw(state);
+    gif.addFrame(ctx, {delay: 500, copy:true});
+    
     drawStats(state);
     if (state.hitCount == 81) {
+        gif.on('finished', function (blob) {
+            console.log("gif finished")
+            window.open(URL.createObjectURL(blob));
+        });
+        gif.render();
+    
         var elems = document.getElementsByClassName("btnsParent");
         for (let i = 0; i < elems.length; i++) {
             const elem = elems[i];
