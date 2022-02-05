@@ -1,0 +1,4 @@
+Wordle colors
+Put stats in the grid
+Sum up misses
+FTUE
