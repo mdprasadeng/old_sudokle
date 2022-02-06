@@ -1,16 +1,17 @@
 
-var HIT_COLOR = "rgba(144, 238, 144, 150)";
-var MISS_COLOR = "rgba(255, 255, 255, 150)";
-var CLOSE_COLOR = "rgba(211,211,211, 150)";
+var HIT_COLOR = "rgba(106, 170, 100, 1)";
+var MISS_COLOR = "rgba(120, 124, 126, 1)";
+var CLOSE_COLOR = "rgba(201, 180, 88, 1)";
 
 class Path {
-    constructor(points, lineWidth, fillColor, scaleBy, offset, opacity) {
+    constructor(points, lineWidth, fillColor, scaleBy, offset, opacity, strokeStyle) {
         this.points = points;
         this.lineWidth = lineWidth;
         this.fillColor = fillColor;
         this.scaleBy = scaleBy; // scales only points
         this.offset = offset; //not scaled
         this.opacity = opacity;
+        this.strokeStyle = strokeStyle;
     }
 }
 
@@ -22,8 +23,8 @@ class Point {
     }
 }
 
-function newPath({ points = [], lineWidth = 1, fillColor = null, scaleBy = 1, offset = new Point(0, 0) , opacity = 1 }) {
-    return new Path(points, lineWidth, fillColor, scaleBy, offset, opacity)
+function newPath({ points = [], lineWidth = 1, fillColor = null, scaleBy = 1, offset = new Point(0, 0) , opacity = 1, strokeStyle = "#AAAAAA" }) {
+    return new Path(points, lineWidth, fillColor, scaleBy, offset, opacity, strokeStyle)
 }
 
 
@@ -160,7 +161,10 @@ function DrawPath(ctx, path, dontstroke = false) {
 
 }
 
-function DrawText(ctx, text, fontSize, at) {
+function DrawText(ctx, text, fontSize, at, fontColor) {
+    ctx.save();
+    ctx.fillStyle = fontColor;
     ctx.font = fontSize + "em Roboto"; 
     ctx.fillText(text, at.x, at.y);
+    ctx.restore();
 }

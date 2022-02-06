@@ -1,12 +1,31 @@
-Wordle colors
-Put Sudokle in the grid
-Generate a number everyday
-Put stats in the grid
-Sum up misses
-FTUE
 Everything in canvas
-Post Game Streak and Distribution
+* Negative space border for 3x3
+* Layout
+  * Buttons should be seperated
+  * space undo x rand space guess:eye space
+* Settings
+ * [green, yellow, gray] [,,,] [,,,]
+ *  + stop showing guess after green
+ * stop showing guesses when guessed
+ * timer 
+* Highlight all numbers when clicked on guess or hit ones  
+Gif 
+    Sudokle #2
+    4 stats 
+    Frame rate slowing down at the end
+    Limit based on number of frames
+Post Game 
+* todays eye count and time
+* Current Streak
+* Max Streak 
+* Your Top 5 Stats by eye count, time 
 
-Gray - #787c7e
-Green- #6aaa64
-Yellow- #c9b458
+Sudokle Mini
+
+First Time User Experience 
+ * On 9x9 play on 3x3
+ * First Guess Green
+ * Auto fill four adjacent
+ * Two Yellow and two Gray
+
+

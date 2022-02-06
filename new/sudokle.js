@@ -217,8 +217,11 @@ function draw(state) {
     for (let i = 0; i < 9; i++) {
         for (let j = 0; j < 9; j++) {
             var workingCell = state.workingGrid[i][j];
+            var hitCell = state.hitsGrid[i][j];
             if (workingCell) {
-                DrawText(ctx, workingCell, 1.5, newPoint({ x: dim.unit * i + dim.unit / 2, y: dim.unit * j + dim.unit / 2 }))
+                var fontColor = hitCell != undefined ? "#ffffff" : "#000000";
+                console.log(hitCell + fontColor);
+                DrawText(ctx, workingCell, 1.5, newPoint({ x: dim.unit * i + dim.unit / 2, y: dim.unit * j + dim.unit / 2 }), fontColor)
             }
 
         }
@@ -275,14 +278,14 @@ function draw(state) {
                 var offset = GetGuessOffset(g, i, j);
                 var path = newPath({
                     lineWidth: 1,
-                    points: GetGuessPath(g, dim.unit / 2, 1),
+                    points: GetGuessPath(g, dim.unit / 2, 0),
                     offset: offset,
                     scaleBy: 1,
                     opacity: 1,
                     fillColor: color
                 });
-                DrawPath(ctx, path, false);
-                DrawText(ctx, guess, g > 4 ? 0.7 : 0.9, GetGuessTextAt(g, i, j))
+                DrawPath(ctx, path, true);
+                DrawText(ctx, guess, g > 4 ? 0.7 : 0.9, GetGuessTextAt(g, i, j), "#ffffff")
             }
 
         }
@@ -295,7 +298,7 @@ function draw(state) {
                 lineWidth: 2,
                 points: GetSquarePath(),
                 scaleBy: dim.unit * 3,
-                offset: newPoint({ x: dim.unit * i * 3, y: dim.unit * j * 3 })
+                offset: newPoint({ x: dim.unit * i * 3, y: dim.unit * j * 3 }),
             });
             DrawPath(ctx, path);
         }
