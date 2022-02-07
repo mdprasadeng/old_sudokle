@@ -1,7 +1,110 @@
 var ctx;
 var canvas;
 var dim = {
-    unit: 70
+    border3x: 1,
+    border1x: 0.25,
+    gap3x: 10,
+    unit3x: 186,
+    unit: 62
+}
+var colors = {
+    border1x: "#000000",
+    border3x: "#000000"
+}
+
+var grids = [
+    new Point(0, 0),
+    new Point(0, 1),
+    new Point(0, 2),
+    new Point(1, 0),
+    new Point(1, 1),
+    new Point(1, 2),
+    new Point(2, 0),
+    new Point(2, 1),
+    new Point(2, 2),
+]
+
+dim.btnunit = Math.floor((dim.unit * 9 + dim.gap3x * 2 - dim.gap3x * 8) / 9);
+
+var gridsXY = grids.map(
+    p => new Point(
+        dim.unit3x * p.x + (p.x >= 0 ? dim.gap3x * p.x : 0),
+        dim.unit3x * p.y + (p.y >= 0 ? dim.gap3x * p.y : 0)
+    ))
+
+var width = dim.gap3x * 6 + dim.unit * 9 + dim.border1x * 18;
+var height = dim.gap3x * 8 + dim.unit * 12 + dim.border1x * 24;
+
+console.log("Canvas should be size:" + width + "x" + height);
+
+function rawDraw(state) {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.translate(0.5, 0.5)
+    gridsXY.forEach(p => {
+        ctx.translate(p.x, p.y);
+        ctx.lineWidth = dim.border3x;
+        walkPath(ctx, [new Point(0, 0),
+        new Point(dim.unit3x, 0),
+        new Point(dim.unit3x, dim.unit3x),
+        new Point(0, dim.unit3x)
+        ])
+        ctx.stroke();
+
+        ctx.lineWidth = dim.border1x;
+        walkPath(ctx, [new Point(dim.unit, 0), new Point(dim.unit, dim.unit3x)], false);
+        ctx.stroke();
+        walkPath(ctx, [new Point(dim.unit * 2, 0), new Point(dim.unit * 2, dim.unit3x)], false);
+        ctx.stroke();
+        walkPath(ctx, [new Point(0, dim.unit), new Point(dim.unit3x, dim.unit)], false);
+        ctx.stroke();
+        walkPath(ctx, [new Point(0, dim.unit * 2), new Point(dim.unit3x, dim.unit * 2)], false);
+        ctx.stroke();
+
+
+        ctx.translate(-p.x, -p.y);
+
+    });
+
+    var width = dim.unit3x * 3 + dim.gap3x * 2;
+    var yoff = dim.unit3x * 3 + dim.gap3x * 3;
+    ctx.lineWidth = dim.border3x;
+    walkPath(ctx, [
+        new Point(0, yoff),
+        new Point(dim.unit3x, yoff),
+        new Point(dim.unit3x, yoff + dim.unit),
+        new Point(0, yoff + dim.unit)
+    ])
+    ctx.stroke();
+    DrawText(ctx, "Sudokle #024", 1.5, new Point(dim.unit3x * 0.45 + dim.gap3x, dim.unit3x * 3 + dim.gap3x * 3 + dim.unit / 2));
+
+    yoff += Math.floor((dim.unit - dim.btnunit)/2);
+    [3, 4, 5].forEach((num, index) => {
+        console.log(num)
+        var x = num * (dim.btnunit + dim.gap3x);
+        walkPath(ctx, [
+            new Point(x, yoff),
+            new Point(x + dim.btnunit, yoff),
+            new Point(x + dim.btnunit, yoff + dim.btnunit),
+            new Point(x, yoff + dim.btnunit)
+        ]);
+        ctx.stroke();
+    });
+
+
+
+    var numY = dim.unit3x * 3 + dim.unit + dim.gap3x * 4;
+    [1, 2, 3, 4, 5, 6, 7, 8, 9].forEach((num, index) => {
+        var x = index * (dim.btnunit + dim.gap3x);
+        walkPath(ctx, [
+            new Point(x, numY),
+            new Point(x + dim.btnunit, numY),
+            new Point(x + dim.btnunit, numY + dim.btnunit),
+            new Point(x, numY + dim.btnunit)
+        ])
+        ctx.stroke();
+        DrawText(ctx, num * 100, 1, new Point(x + dim.btnunit / 2, numY + dim.btnunit / 2))
+    });
+
 }
 
 var sx = 0;
@@ -77,23 +180,13 @@ function init() {
 
 function onLoad() {
 
-    
+
 
     var screenWidth = window.screen.availWidth;
     var screenHeight = window.screen.availHeight;
 
-    var canvasSize;
-    if (screenWidth > screenHeight) {
-        canvasSize = screenHeight * 0.6;
-    } else {
-        canvasSize = screenWidth - 10;
-    }
-    canvasSize = Math.floor(canvasSize / 9) * 9;
     canvas = document.getElementById('playarea');
-    canvasSize = canvas.width;
-    canvas.width = canvasSize;
-    canvas.height = canvasSize;
-    dim.unit = Math.floor(canvasSize / 9);
+    var canvasSize = canvas.width;
 
     gif = new GIF({
         workers: 2,
@@ -116,11 +209,11 @@ function onLoad() {
             console.log("Font loaded");
 
             ctx = canvas.getContext('2d');
-            ctx.translate(0.5, 0.5);
             ctx.textBaseline = 'middle';
             ctx.textAlign = 'center';
             init()
-            draw(state);
+            //draw(state);
+            rawDraw(state);
         });
 
 
@@ -171,6 +264,8 @@ function GetGuessTextAt(g, i, j) {
         case 8: return newPoint({ x: dim.unit * (i + 1) - dim.unit / 2, y: dim.unit * (j + 1) - dim.unit / 7 });
     }
 }
+
+
 
 
 function draw(state) {
@@ -363,8 +458,8 @@ function onGuess() {
     if (!someGuessesAreMade) return;
     check(state);
     draw(state);
-    gif.addFrame(ctx, {delay: 500, copy:true});
-    
+    gif.addFrame(ctx, { delay: 500, copy: true });
+
     drawStats(state);
     if (state.hitCount == 81) {
         gif.on('finished', function (blob) {
@@ -372,7 +467,7 @@ function onGuess() {
             window.open(URL.createObjectURL(blob));
         });
         gif.render();
-    
+
         var elems = document.getElementsByClassName("btnsParent");
         for (let i = 0; i < elems.length; i++) {
             const elem = elems[i];

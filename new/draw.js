@@ -113,27 +113,30 @@ function GetGuessPath8(unit, off) {
     ];
 }
 
-function GetSquarePath() {
-    return [
-        new Point(0, 0),
-        new Point(1, 0),
-        new Point(1, 1),
-        new Point(0, 1),
-    ];
+function walkPath(ctx, points, close = true) {
+    ctx.beginPath();
+
+    for (let i = 0; i < points.length; i++) {
+        var point = points[i];
+        if (i == 0) {
+            ctx.moveTo(point.x, point.y);
+        } else {
+            ctx.lineTo(point.x, point.y);
+        }
+    }
+    if (close)
+        ctx.closePath();
 }
 
-function GetRectPath(width, height) {
-    return [
-        new Point(0, 0),
-        new Point(width, 0),
-        new Point(width, height),
-        new Point(0, height),
-    ];
+function DrawLinePath(ctx, points, lineWidth) {
+    ctx.lineWidth = lineWidth;
+    
+    ctx.stroke();
 }
 
 function DrawPath(ctx, path, dontstroke = false) {
     ctx.lineWidth = path.lineWidth;
-    ctx.globalAlpha = path.opacity;
+    //ctx.globalAlpha = path.opacity;
     ctx.translate(path.offset.x, path.offset.y);
     ctx.beginPath();
 
@@ -149,15 +152,15 @@ function DrawPath(ctx, path, dontstroke = false) {
     if (!dontstroke) {
         ctx.stroke();
     }
-    if (path.fillColor) {
-        ctx.save();
-        ctx.fillStyle = path.fillColor;
-        ctx.fill();
-        ctx.restore();
-    }
+    // if (path.fillColor) {
+    //     ctx.save();
+    //     ctx.fillStyle = path.fillColor;
+    //     ctx.fill();
+    //     ctx.restore();
+    // }
 
-    ctx.setTransform(1, 0, 0, 1, 0, 0);
-    ctx.globalAlpha = 1;
+    ctx.translate(-path.offset.x, -path.offset.y);
+    //ctx.globalAlpha = 1;
 
 }
 
