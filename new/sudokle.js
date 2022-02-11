@@ -1,3 +1,10 @@
+class Pnt {
+    constructor(x, y) {
+        this.x = x;
+        this.y = y;
+    }
+}
+
 /** 
  * Draws a rounded rectangle using the current state of the canvas.  
  * If you omit the last three params, it will draw a rectangle  
@@ -10,7 +17,7 @@
  * @param {Boolean} fill Whether to fill the rectangle. Defaults to false. 
  * @param {Boolean} stroke Whether to stroke the rectangle. Defaults to true. 
  */
-CanvasRenderingContext2D.prototype.roundRect = function (x, y, width, height, radius, fill, stroke) {
+CanvasRenderingContext2D.prototype.walkRoundRect = function (xy, wh, radius) {
     var cornerRadius = { upperLeft: radius, upperRight: radius, lowerLeft: radius, lowerRight: radius };
     if (typeof stroke == "undefined") {
         stroke = true;
@@ -20,6 +27,10 @@ CanvasRenderingContext2D.prototype.roundRect = function (x, y, width, height, ra
             cornerRadius[side] = radius[side];
         }
     }
+    var x = xy.x;
+    var y = xy.y;
+    var width = wh.x;
+    var height = wh.y;
 
     this.beginPath();
     this.moveTo(x + cornerRadius.upperLeft, y);
@@ -32,223 +43,97 @@ CanvasRenderingContext2D.prototype.roundRect = function (x, y, width, height, ra
     this.lineTo(x, y + cornerRadius.upperLeft);
     this.quadraticCurveTo(x, y, x + cornerRadius.upperLeft, y);
     this.closePath();
-    if (stroke) {
-        this.stroke();
-    }
-    if (fill) {
-        this.fill();
-    }
+
 }
-class Pnt {
-    constructor(x, y) {
-        this.x = x;
-        this.y = y;
+
+CanvasRenderingContext2D.prototype.walkRect = function (xy, wh) {
+
+    var x = xy.x;
+    var y = xy.y;
+    var width = wh.x;
+    var height = wh.y;
+
+    this.beginPath();
+    this.moveTo(x, y);
+    this.lineTo(x + width, y);
+    this.lineTo(x + width, y + height);
+    this.lineTo(x, y + height);
+    this.closePath();
+
+}
+
+CanvasRenderingContext2D.prototype.walkPath = function (points, closePath = true) {
+    this.beginPath();
+
+    for (let i = 0; i < points.length; i++) {
+        var point = points[i];
+        if (i == 0) {
+            this.moveTo(point.x, point.y);
+        } else {
+            this.lineTo(point.x, point.y);
+        }
     }
+    if (closePath)
+        this.closePath();
+}
+
+
+CanvasRenderingContext2D.prototype.drawText = function (text, at, fontSize, fillStyle) {
+    this.fillStyle = fillStyle;
+    this.font = fontSize + "px Roboto";
+    this.fillText(text, at.x, at.y);
+}
+
+CanvasRenderingContext2D.prototype.fillWStyle = function (fillStyle) {
+    ctx.fillStyle = fillStyle;
+    ctx.fill();
+}
+
+CanvasRenderingContext2D.prototype.strokeWStyle = function (strokeStyle) {
+    ctx.strokeStyle = strokeStyle;
+    ctx.stroke();
 }
 
 var config = {
-    size1x: 65,
+    unit: 65,
     gap: 6
 }
 
+
 var dim = {};
 {
-    dim.size1x = config.size1x;
-    dim.size3x = dim.size1x * 3;
+    dim.unit = config.unit;
+    dim.box = dim.unit * 3;
     dim.gap = config.gap;
-    dim.btn1x = Math.floor((dim.size1x * 3 - dim.gap * 2) / 3);
-    dim.width = dim.size1x * 9 + dim.gap * 2;
-    dim.heigh = dim.width + dim.btn1x * 3 + dim.gap * 4;
-    dim.statsY = dim.size3x * 3 + dim.gap * 3;
-    dim.numbtnY = dim.size3x * 3 + dim.gap * 5 + dim.btn1x;
-    dim.actbtnY = dim.size3x * 3 + dim.gap * 6 + dim.btn1x * 2;
-    dim.border3x = 1;
-}
-
-console.log((dim.size1x * 3 - dim.gap * 2) / 3);
-
-console.log(dim);
-
-var tlwh = {}; //topleft and width height
-{
-    tlwh["tutorial"] = [new Pnt(0, dim.gap), new Pnt(dim.btn1x, dim.btn1x)];
-    tlwh["sudokle"] = [new Pnt(dim.btn1x * 2 + dim.gap * 2, dim.gap), new Pnt(dim.size3x, dim.btn1x)];
-    tlwh["guesscount"] = [new Pnt(dim.btn1x * 5 + dim.gap * 5, dim.gap), new Pnt(dim.btn1x * 2 + dim.gap, dim.btn1x)];
-    tlwh["stats"] = [new Pnt(dim.btn1x * 7 + dim.gap * 7, dim.gap), new Pnt(dim.btn1x, dim.btn1x)];
-    tlwh["settings"] = [new Pnt(dim.btn1x * 8 + dim.gap * 8, dim.gap), new Pnt(dim.btn1x, dim.btn1x)];
-
-    tlwh["0x0"] = [new Pnt(0, dim.btn1x + dim.gap * 2), new Pnt(dim.size3x, dim.size3x)];
-    tlwh["1x0"] = [new Pnt(dim.size3x + dim.gap, dim.btn1x + dim.gap * 2), new Pnt(dim.size3x, dim.size3x)];
-    tlwh["2x0"] = [new Pnt(dim.size3x * 2 + dim.gap * 2, dim.btn1x + dim.gap * 2), new Pnt(dim.size3x, dim.size3x)];
-    tlwh["0x1"] = [new Pnt(0, dim.size3x + dim.gap * 3 + dim.btn1x), new Pnt(dim.size3x, dim.size3x)];
-    tlwh["1x1"] = [new Pnt(dim.size3x + dim.gap, dim.size3x + dim.gap * 3 + dim.btn1x), new Pnt(dim.size3x, dim.size3x)];
-    tlwh["2x1"] = [new Pnt(dim.size3x * 2 + dim.gap * 2, dim.size3x + dim.gap * 3 + dim.btn1x), new Pnt(dim.size3x, dim.size3x)];
-    tlwh["0x2"] = [new Pnt(0, dim.size3x * 2 + dim.gap * 4 + dim.btn1x), new Pnt(dim.size3x, dim.size3x)];
-    tlwh["1x2"] = [new Pnt(dim.size3x + dim.gap, dim.size3x * 2 + dim.gap * 4 + dim.btn1x), new Pnt(dim.size3x, dim.size3x)];
-    tlwh["2x2"] = [new Pnt(dim.size3x * 2 + dim.gap * 2, dim.size3x * 2 + dim.gap * 4 + dim.btn1x), new Pnt(dim.size3x, dim.size3x)];
-
-
-    tlwh["numbtn1"] = [new Pnt(0, dim.numbtnY), new Pnt(dim.btn1x, dim.btn1x)];
-    tlwh["numbtn2"] = [new Pnt(dim.btn1x * 1 + dim.gap * 1, dim.numbtnY), new Pnt(dim.btn1x, dim.btn1x)];
-    tlwh["numbtn3"] = [new Pnt(dim.btn1x * 2 + dim.gap * 2, dim.numbtnY), new Pnt(dim.btn1x, dim.btn1x)];
-    tlwh["numbtn4"] = [new Pnt(dim.btn1x * 3 + dim.gap * 3, dim.numbtnY), new Pnt(dim.btn1x, dim.btn1x)];
-    tlwh["numbtn5"] = [new Pnt(dim.btn1x * 4 + dim.gap * 4, dim.numbtnY), new Pnt(dim.btn1x, dim.btn1x)];
-    tlwh["numbtn6"] = [new Pnt(dim.btn1x * 5 + dim.gap * 5, dim.numbtnY), new Pnt(dim.btn1x, dim.btn1x)];
-    tlwh["numbtn7"] = [new Pnt(dim.btn1x * 6 + dim.gap * 6, dim.numbtnY), new Pnt(dim.btn1x, dim.btn1x)];
-    tlwh["numbtn8"] = [new Pnt(dim.btn1x * 7 + dim.gap * 7, dim.numbtnY), new Pnt(dim.btn1x, dim.btn1x)];
-    tlwh["numbtn9"] = [new Pnt(dim.btn1x * 8 + dim.gap * 8, dim.numbtnY), new Pnt(dim.btn1x, dim.btn1x)];
-
-    // tut stats settings
-    //  space undo del rand space guess:eye space
-    // undo del rand guessguessguess stats settings tut    
-
-    //tlwh["undobtn"] = [new Pnt(0, dim.actbtnY), new Pnt(dim.btn1x, dim.btn1x)];
-    tlwh["delbtn"] = [new Pnt(dim.btn1x + dim.gap, dim.actbtnY), new Pnt(dim.btn1x, dim.btn1x)];
-    tlwh["randbtn"] = [new Pnt(dim.btn1x * 2 + dim.gap * 2, dim.actbtnY), new Pnt(dim.btn1x, dim.btn1x)];
-    tlwh["guessbtn"] = [new Pnt(dim.btn1x * 3 + dim.gap * 3, dim.actbtnY), new Pnt(dim.size3x, dim.btn1x)];
-    tlwh["statsbtn"] = [new Pnt(dim.btn1x * 6 + dim.gap * 6, dim.actbtnY), new Pnt(dim.btn1x, dim.btn1x)];
-    //tlwh["settingsbtn"] = [new Pnt(dim.btn1x * 7 + dim.gap * 7, dim.actbtnY), new Pnt(dim.btn1x, dim.btn1x)];
-    //tlwh["tutorialbtn"] = [new Pnt(dim.btn1x * 8 + dim.gap * 8, dim.actbtnY), new Pnt(dim.btn1x, dim.btn1x)];
-
-
+    dim.btn = Math.floor((dim.box - dim.gap * 2) / 3);
+    dim.text = Math.floor((dim.btn - dim.gap * 2)) / 2;
 }
 
 var colors = {
     hit: "rgba(106, 170, 100, 1)",
     miss: "rgba(120, 124, 126, 1)",
     close: "rgba(201, 180, 88, 1)",
-    grid: "#FFFFFF",
-    gridAlt: "#EEEEEE",
-    btn: "#d3d6da"
+    unitStroke: "#000000",
+    unitAltStroke: "#000000",
+    unit: "#FFFFFF",
+    unitAlt: "#AAAAAA",
+    btn: "#d3d6da",
+    btntxt: "#000000",
+    txt: "#000000",
+    debug: "#AA0000",
 }
-
-var tlwhRoundCorners = {};
-for (const key in tlwh) {
-    if (key.indexOf("btn") >= 0) {
-        tlwhRoundCorners[key] = 5;
-    } else {
-        tlwhRoundCorners[key] = 0;
-    }
-}
-
-
-var tlwhStrokes = {};
-for (const key in tlwh) {
-    if (key.indexOf("btn") >= 0) {
-        tlwhStrokes[key] = 0;
-    } else {
-        tlwhStrokes[key] = dim.border3x;
-    }
-}
-
-
-var tlwhFills = {};
-{
-    for (const key in tlwh) {
-        if (key.indexOf("btn") >= 0) {
-            tlwhFills[key] = colors.btn;
-        } else {
-            tlwhFills[key] = colors.grid;
-        }
-    }
-    var grays = ["1x0", "0x1", "2x1", "1x2"];
-    for (const key in grays) {
-        tlwhFills[grays[key]] = colors.gridAlt;
-    }
-}
-var tlwhText = {};
-for (const key in tlwh) {
-    tlwhText[key] = key;
-}
-
 var ctx;
 var canvas;
 
-
-
-function walkPath(ctx, points, close = true) {
-    ctx.beginPath();
-
-    for (let i = 0; i < points.length; i++) {
-        var point = points[i];
-        if (i == 0) {
-            ctx.moveTo(point.x, point.y);
-        } else {
-            ctx.lineTo(point.x, point.y);
-        }
-    }
-    if (close)
-        ctx.closePath();
-}
-
-function DrawText(ctx, text, fontSize, at, fontColor) {
-    ctx.save();
-    ctx.fillStyle = fontColor;
-    ctx.font = fontSize + "em Roboto";
-    ctx.fillText(text, at.x, at.y);
-    ctx.restore();
-}
-
-
-function rawDraw(state) {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    ctx.translate(0.5, 0.5);
-    ctx.lineWidth = dim.border3x;
-    for (const key in tlwh) {
-        let tl = tlwh[key][0];
-        let wh = tlwh[key][1];
-        if (tlwhRoundCorners[key] > 0) {
-            if (tlwhFills[key]) {
-                ctx.save();
-                ctx.fillStyle = tlwhFills[key];
-                ctx.roundRect(tl.x, tl.y, wh.x, wh.y, tlwhRoundCorners[key], true, false);
-                ctx.restore();
-            }
-        } else {
-            walkPath(ctx, [
-                tl,
-                new Pnt(tl.x + wh.x, tl.y),
-                new Pnt(tl.x + wh.x, tl.y + wh.y),
-                new Pnt(tl.x, tl.y + wh.y),
-            ]);
-            if (tlwhStrokes[key] > 0) {
-                ctx.save();
-                ctx.lineWidth = tlwhStrokes[key];
-                ctx.stroke();
-                ctx.restore();
-            }
-            if (tlwhFills[key]) {
-                ctx.save();
-                ctx.fillStyle = tlwhFills[key];
-                ctx.fill();
-                ctx.restore();
-            }
-        }
-
-
-
-
-    }
-
-}
-
-var sx = 0;
-var sy = 0;
-var answer = [];
-var correct = [];
-var current = [];
-var guessed = [];
-var correctGrid = [];
-var guessCounter = 0;
-
-
 class State {
     constructor() {
+        this.puzzleNo = 123;
         this.sx = 0;
         this.sy = 0;
         this.answerGrid = fillGrid();
         this.hitsGrid = newGrid(); //has all values which are HITs filled
         this.workingGrid = newGrid(); //has working values
+        this.guessesGrid = newGrid();
         this.guessedGrids = []; //has array of guesses made
         this.checkedGrids = [];
         this.workingGridHistory = [];
@@ -258,6 +143,200 @@ class State {
 
     }
 }
+
+
+
+function walkAndDraw(state) {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.save();
+    ctx.fillStyle = "white";
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    ctx.restore();
+    ctx.textBaseline = 'middle';
+    ctx.textAlign = 'center';
+    ctx.translate(0.5, 0.5)
+
+    var offx = 0;
+    var offy = 0;
+    var x = offx;
+    var y = offy;
+    var lx = x;
+    var ly = y;
+    var w;
+    var h;
+    var t;
+    // header
+    {
+        //tutorial ?
+        lx = x, ly = y, w = dim.unit, h = dim.unit;
+        ctx.walkRoundRect(new Pnt(lx, ly), new Pnt(w, h), 5);
+        //ctx.fillWStyle(colors.btn);
+        ctx.drawText("?", new Pnt(lx + w / 2, ly + h / 2), dim.text + 10, colors.txt);
+        x += w;
+
+        //settings ⚙
+        lx = x, ly = y, w = dim.unit, h = dim.unit;
+        ctx.walkRoundRect(new Pnt(lx, ly), new Pnt(w, h), 5);
+        //ctx.fillWStyle(colors.btn);
+        ctx.drawText("⚙", new Pnt(lx + w / 2, ly + h / 2), dim.text + 20, colors.txt);
+
+
+        //Sudokle #No
+        x = dim.box + dim.gap;
+        lx = x, ly = y, w = dim.box, h = dim.unit;
+        ctx.walkRect(new Pnt(lx, ly), new Pnt(w, h), 5);
+        ctx.strokeWStyle(colors.debug);
+        ctx.drawText("Sudokle #" + state.puzzleNo, new Pnt(lx + w / 2, ly + h / 2), dim.text, colors.txt);
+        x += w;
+        x += dim.gap;
+
+
+        //yellow and gray count
+        lx = x, ly = y, w = dim.unit, h = dim.unit;
+        ctx.walkRect(new Pnt(lx, ly), new Pnt(w, h), 5);
+        ctx.strokeWStyle(colors.debug);
+        ctx.drawText("79", new Pnt(lx + w / 2, ly + h / 2), dim.text, colors.txt);
+        x += w;
+        x += dim.gap;
+        x += dim.btn + dim.gap;
+
+        //streak 📊
+        x = dim.box * 3 + dim.gap * 2 - dim.unit;
+        lx = x, ly = y, w = dim.unit, h = dim.unit;
+        ctx.walkRoundRect(new Pnt(lx, ly), new Pnt(w, h), 5);
+        //ctx.fillWStyle(colors.btn);
+        ctx.drawText("📊", new Pnt(lx + w / 2, ly + h / 2), dim.text, colors.txt);
+        x += w;
+        x += dim.gap;
+
+    }
+    x = offx;
+    y = offy + dim.unit + dim.gap
+
+    {
+        for (let bi = 0; bi < 3; bi++) {
+            for (let bj = 0; bj < 3; bj++) {
+                var stroke = colors.unitStroke;
+                var fill = colors.unit;
+
+                ctx.lineWidth = 0.75;
+
+                lx = x + bi * dim.box + (bi > 0 ? (bi) * dim.gap : 0);
+                ly = y + bj * dim.box + (bj > 0 ? (bj) * dim.gap : 0);
+                w = dim.box, h = dim.box;
+                ctx.walkRect(new Pnt(lx, ly), new Pnt(w, h));
+                ctx.strokeWStyle(stroke);
+                
+                
+
+                for (let ui = 0; ui < 3; ui++) {
+                    for (let uj = 0; uj < 3; uj++) {
+                        let gx = bi * 3 + ui;
+                        let gy = bj * 3 + uj;
+                        let hit = state.hitsGrid[gx][gy];
+                        let txt = state.workingGrid[gx][gy];
+
+                        lx = x + bi * dim.box + ui * dim.unit + (bi > 0 ? (bi) * dim.gap : 0);
+                        ly = y + bj * dim.box + uj * dim.unit + (bj > 0 ? (bj) * dim.gap : 0);
+                        w = dim.unit, h = dim.unit;
+
+
+
+                        if (!!hit) {
+                            ctx.walkRect(new Pnt(lx, ly), new Pnt(w, h));
+                            ctx.fillWStyle(colors.hit);            
+                        }
+                        if (!!txt) {
+                            ctx.drawText("" + txt, new Pnt(lx + w / 2, ly + h / 2), dim.text, colors.btntxt);
+                        }
+                    }
+                }
+
+                ctx.lineWidth = 0.25;
+
+                lx = x + bi * dim.box + (bi > 0 ? (bi) * dim.gap : 0);
+                ly = y + bj * dim.box + (bj > 0 ? (bj) * dim.gap : 0);
+                
+                ctx.walkPath([new Pnt(lx + dim.unit, ly), new Pnt(lx + dim.unit, ly + dim.box)], false);
+                ctx.strokeWStyle(stroke)
+
+                ctx.walkPath([new Pnt(lx + 2 * dim.unit, ly), new Pnt(lx + 2 * dim.unit, ly + dim.box)], false);
+                ctx.strokeWStyle(stroke)
+
+                ctx.walkPath([new Pnt(lx, ly + dim.unit), new Pnt(lx + dim.box, ly + dim.unit)], false);
+                ctx.strokeWStyle(stroke)
+
+                ctx.walkPath([new Pnt(lx, ly + 2 * dim.unit), new Pnt(lx + dim.box, ly + 2 * dim.unit)], false);
+                ctx.strokeWStyle(stroke)
+                
+
+
+            }
+        }
+    }
+
+    x = offx;
+    y += dim.box * 3 + dim.gap * 3;
+
+    {
+        ly = y;
+        for (let n = 1; n <= 9; n++) {
+            lx = x;
+            w = dim.btn, h = dim.btn;
+            ctx.walkRoundRect(new Pnt(lx, ly), new Pnt(w, h), 4);
+            ctx.fillWStyle(colors.btn);
+            ctx.drawText("" + n, new Pnt(lx + w / 2, ly + h / 2), dim.text, colors.btntxt);
+            x += dim.btn + dim.gap;
+        }
+    }
+    x = offx;
+    y += dim.btn + dim.gap;
+
+    {
+        ly = y;
+
+        x += dim.btn + dim.gap;
+        lx = x;
+        w = dim.btn, h = dim.btn;
+        ctx.walkRoundRect(new Pnt(lx, ly), new Pnt(w, h), 4);
+        ctx.fillWStyle(colors.btn);
+        ctx.drawText("⟲", new Pnt(lx + w / 2, ly + h / 2), dim.text, colors.btntxt);
+        x += dim.btn + dim.gap;
+
+        lx = x;
+        w = dim.btn, h = dim.btn;
+        ctx.walkRoundRect(new Pnt(lx, ly), new Pnt(w, h), 4);
+        ctx.fillWStyle(colors.btn);
+        ctx.drawText("␡", new Pnt(lx + w / 2, ly + h / 2), dim.text * 2, colors.btntxt);
+        x += dim.btn + dim.gap;
+
+        lx = x;
+        w = dim.box, h = dim.btn;
+        ctx.walkRoundRect(new Pnt(lx, ly), new Pnt(w, h), 4);
+        ctx.fillWStyle(colors.btn);
+        ctx.drawText("Enter", new Pnt(lx + w / 2, ly + h / 2), dim.text + 5, colors.btntxt);
+        x += dim.box + dim.gap;
+
+        lx = x;
+        w = dim.btn, h = dim.btn;
+        ctx.walkRoundRect(new Pnt(lx, ly), new Pnt(w, h), 4);
+        ctx.fillWStyle(colors.btn);
+        ctx.drawText("🎲", new Pnt(lx + w / 2, ly + h / 2), dim.text, colors.btntxt);
+        x += dim.btn + dim.gap;
+
+        lx = x;
+        w = dim.btn, h = dim.btn;
+        ctx.walkRoundRect(new Pnt(lx, ly), new Pnt(w, h), 4);
+        ctx.fillWStyle(colors.btn);
+        ctx.drawText("🎲", new Pnt(lx + w / 2, ly + h / 2), dim.text + 20, colors.btntxt);
+        x += dim.btn + dim.gap;
+
+
+    }
+
+}
+
+
 
 function check(state) {
 
@@ -300,6 +379,10 @@ var state;
 var gif;
 function init() {
     state = new State();
+    if (true) {
+        state = { "puzzleNo": 345, "sx": 0, "sy": 0, "answerGrid": [[4, 2, 7, 3, 8, 6, 9, 5, 1], [6, 1, 3, 7, 9, 5, 2, 8, 4], [9, 8, 5, 4, 2, 1, 3, 7, 6], [1, 3, 6, 9, 5, 8, 7, 4, 2], [5, 4, 9, 6, 7, 2, 1, 3, 8], [8, 7, 2, 1, 3, 4, 6, 9, 5], [3, 6, 1, 5, 4, 9, 8, 2, 7], [2, 9, 4, 8, 6, 7, 5, 1, 3], [7, 5, 8, 2, 1, 3, 4, 6, 9]], "hitsGrid": [[null, null, 7, null, null, null, null, null, null], [null, null, null, null, null, null, null, null, null], [null, null, null, null, null, null, 3, null, 6], [null, null, null, null, null, null, 7, null, null], [null, 4, null, null, null, null, null, 3, 8], [null, 7, null, null, null, 4, null, 9, null], [null, null, null, null, null, null, 8, null, null], [null, null, null, null, null, null, null, 1, null], [null, null, 8, null, null, null, null, null, null]], "workingGrid": [[null, null, 7, null, null, null, null, null, null], [null, null, null, null, null, null, null, null, null], [null, null, null, null, null, null, 3, null, 6], [null, null, null, null, null, null, 7, null, null], [null, 4, null, null, null, null, null, 3, 8], [null, 7, null, null, null, 4, null, 9, null], [null, null, null, null, null, null, 8, null, null], [null, null, null, null, null, null, null, 1, null], [null, null, 8, null, null, null, null, null, null]], "guessedGrids": [[[5, 6, 7, 1, 9, 3, 4, 8, 2], [4, 3, 9, 2, 5, 8, 6, 7, 1], [8, 1, 2, 6, 4, 7, 3, 9, 5], [9, 8, 3, 5, 1, 2, 7, 6, 4], [2, 4, 1, 7, 6, 9, 5, 3, 8], [6, 7, 5, 3, 8, 4, 1, 2, 9], [7, 5, 6, 9, 2, 1, 8, 4, 3], [3, 2, 8, 4, 7, 5, 9, 1, 6], [1, 9, 4, 8, 3, 6, 2, 5, 7]], [[3, 6, 7, 5, 1, 2, 4, 8, 9], [5, 8, 9, 6, 4, 3, 1, 2, 7], [1, 2, 4, 9, 7, 8, 3, 5, 6], [8, 5, 1, 2, 3, 9, 7, 6, 4], [9, 4, 2, 7, 6, 1, 5, 3, 8], [6, 7, 3, 8, 5, 4, 2, 9, 1], [2, 1, 6, 3, 9, 7, 8, 4, 5], [7, 3, 5, 4, 8, 6, 9, 1, 2], [4, 9, 8, 1, 2, 5, 6, 7, 3]]], "checkedGrids": [[["M", "M", "H", "M", "C", "C", "M", "C", "M"], ["C", "C", "M", "M", "C", "M", "M", "C", "C"], ["C", "C", "M", "M", "C", "M", "H", "M", "M"], ["M", "M", "C", "C", "M", "C", "H", "M", "C"], ["M", "H", "M", "C", "C", "M", "M", "H", "H"], ["M", "H", "M", "C", "M", "H", "C", "M", "C"], ["C", "C", "C", "C", "M", "M", "H", "M", "C"], ["C", "C", "C", "M", "C", "M", "M", "H", "M"], ["M", "C", "C", "C", "C", "M", "M", "M", "C"]], [["M", "M", "H", "M", "M", "M", "M", "C", "C"], ["M", "C", "M", "M", "M", "M", "M", "C", "M"], ["M", "C", "M", "M", "M", "M", "H", "C", "H"], ["C", "M", "C", "M", "C", "C", "H", "M", "C"], ["C", "H", "C", "C", "C", "M", "M", "H", "H"], ["M", "H", "M", "M", "C", "H", "M", "H", "M"], ["C", "C", "C", "M", "C", "C", "H", "M", "M"], ["C", "M", "M", "M", "C", "C", "M", "H", "M"], ["M", "C", "H", "C", "C", "M", "C", "M", "C"]]], "workingGridHistory": [], "hitCount": 13, "missCount": 76, "closeCount": 63 }
+    }
+
 }
 
 
@@ -338,7 +421,8 @@ function onLoad() {
             ctx.textAlign = 'center';
             init()
             //draw(state);
-            rawDraw(state);
+            //rawDraw(state);
+            walkAndDraw(state);
         });
 
 
@@ -361,185 +445,6 @@ function onMouseDown(evt) {
     state.sx = Math.floor(downAt.x / dim.unit);
     state.sy = Math.floor(downAt.y / dim.unit);
     draw(state);
-}
-
-function GetGuessOffset(g, i, j) {
-    switch (g) {
-        case 1: return newPoint({ x: dim.unit * i, y: dim.unit * j });
-        case 2: return newPoint({ x: dim.unit * i + dim.unit, y: dim.unit * j });
-        case 3: return newPoint({ x: dim.unit * i, y: dim.unit * j + dim.unit });
-        case 4: return newPoint({ x: dim.unit * i + dim.unit, y: dim.unit * j + dim.unit });
-        case 5: return newPoint({ x: dim.unit * i, y: dim.unit * j });
-        case 6: return newPoint({ x: dim.unit * i + dim.unit, y: dim.unit * j });
-        case 7: return newPoint({ x: dim.unit * i, y: dim.unit * j + dim.unit });
-        case 8: return newPoint({ x: dim.unit * i + dim.unit, y: dim.unit * j + dim.unit });
-    }
-}
-
-function GetGuessTextAt(g, i, j) {
-    switch (g) {
-        case 1: return newPoint({ x: dim.unit * i + dim.unit / 7, y: dim.unit * j + dim.unit / 6 });
-        case 2: return newPoint({ x: dim.unit * (i + 1) - dim.unit / 7, y: dim.unit * j + dim.unit / 6 });
-        case 3: return newPoint({ x: dim.unit * i + dim.unit / 7, y: dim.unit * (j + 1) - dim.unit / 6 });
-        case 4: return newPoint({ x: dim.unit * (i + 1) - dim.unit / 7, y: dim.unit * (j + 1) - dim.unit / 6 });
-
-        case 5: return newPoint({ x: dim.unit * i + dim.unit / 2, y: dim.unit * j + dim.unit / 7 });
-        case 6: return newPoint({ x: dim.unit * (i + 1) - dim.unit / 7, y: dim.unit * j + dim.unit / 2 });
-        case 7: return newPoint({ x: dim.unit * i + dim.unit / 7, y: dim.unit * (j + 1) - dim.unit / 2 });
-        case 8: return newPoint({ x: dim.unit * (i + 1) - dim.unit / 2, y: dim.unit * (j + 1) - dim.unit / 7 });
-    }
-}
-
-
-
-
-function draw(state) {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    ctx.save();
-    ctx.fillStyle = "white";
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
-    ctx.restore();
-    //Draw9x9
-    for (let i = 0; i < 9; i++) {
-        for (let j = 0; j < 9; j++) {
-            var hitCell = state.hitsGrid[i][j];
-
-            var fillColor = hitCell ? HIT_COLOR : null;
-
-            var path = newPath({
-                lineWidth: 1,
-                points: GetSquarePath(),
-                scaleBy: dim.unit,
-                offset: newPoint({ x: dim.unit * i, y: dim.unit * j }),
-                opacity: !fillColor ? 0.4 : 1,
-                fillColor: fillColor
-            });
-
-            DrawPath(ctx, path);
-
-        }
-    }
-
-    if (state.hitCount != 81) {
-        //Draw Selection
-        var path = newPath({
-            lineWidth: 1,
-            points: GetSquarePath(),
-            scaleBy: dim.unit,
-            offset: newPoint({ x: dim.unit * state.sx, y: dim.unit * state.sy }),
-            opacity: 0.66,
-            fillColor: "yellow"
-        });
-        DrawPath(ctx, path);
-
-    }
-
-    for (let i = 0; i < 9; i++) {
-        for (let j = 0; j < 9; j++) {
-            var workingCell = state.workingGrid[i][j];
-            var hitCell = state.hitsGrid[i][j];
-            if (workingCell) {
-                var fontColor = hitCell != undefined ? "#ffffff" : "#000000";
-                console.log(hitCell + fontColor);
-                DrawText(ctx, workingCell, 1.5, newPoint({ x: dim.unit * i + dim.unit / 2, y: dim.unit * j + dim.unit / 2 }), fontColor)
-            }
-
-        }
-    }
-
-    //Draw9x9 guesses
-    for (let i = 0; i < 9; i++) {
-        for (let j = 0; j < 9; j++) {
-            var correctGuesses = [];
-            var subGrid = get3x3GridXY(i, j);
-            for (var x = subGrid.startX; x <= subGrid.endX; x++) {
-                for (var y = subGrid.startY; y <= subGrid.endY; y++) {
-                    if (state.hitsGrid[x][y]) {
-                        correctGuesses.push(state.hitsGrid[x][y]);
-                    }
-                }
-            }
-
-            var allGuesses = [];
-            var allChecks = [];
-            for (var g = 0; g < state.guessedGrids.length; g++) {
-                var guessedGrid = state.guessedGrids[g];
-                var checkedGrid = state.checkedGrids[g];
-                var isGuessMade = !!guessedGrid[i][j];
-                var isGuessValueAlreadyHit = isGuessMade && correctGuesses.indexOf(guessedGrid[i][j]) >= 0;
-                var isGuessValueAlreadyGuessed = isGuessMade && allGuesses.indexOf(guessedGrid[i][j]) >= 0;
-                if (isGuessMade && !isGuessValueAlreadyGuessed && !isGuessValueAlreadyHit) {
-                    allGuesses.push(guessedGrid[i][j]);
-                    allChecks.push(checkedGrid[i][j]);
-                }
-            }
-
-            // if (i == 4 && j == 4) {
-            //     allGuesses = [1,2,3,4,5,6,7,8];
-            //     allChecks = [HIT, MISS, HIT, MISS, HIT, MISS, HIT, MISS];
-            // }
-
-            for (var g = 1; g <= allGuesses.length; g++) {
-                var guess = allGuesses[g - 1];
-                var check = allChecks[g - 1];
-                var color;
-                switch (check) {
-                    case HIT:
-                        color = HIT_COLOR;
-                        break;
-                    case CLOSE:
-                        color = CLOSE_COLOR;
-                        break;
-                    case MISS:
-                        color = MISS_COLOR;
-                        break;
-                }
-
-                var offset = GetGuessOffset(g, i, j);
-                var path = newPath({
-                    lineWidth: 1,
-                    points: GetGuessPath(g, dim.unit / 2, 0),
-                    offset: offset,
-                    scaleBy: 1,
-                    opacity: 1,
-                    fillColor: color
-                });
-                DrawPath(ctx, path, true);
-                DrawText(ctx, guess, g > 4 ? 0.7 : 0.9, GetGuessTextAt(g, i, j), "#ffffff")
-            }
-
-        }
-    }
-
-    //Draw3x3
-    for (let i = 0; i < 3; i++) {
-        for (let j = 0; j < 3; j++) {
-            var path = newPath({
-                lineWidth: 2,
-                points: GetSquarePath(),
-                scaleBy: dim.unit * 3,
-                offset: newPoint({ x: dim.unit * i * 3, y: dim.unit * j * 3 }),
-            });
-            DrawPath(ctx, path);
-        }
-    }
-
-    // //Draw 9x9
-    // var path = newPath({
-    //     lineWidth: 5,
-    //     points: GetSquarePath(),
-    //     scaleBy: dim.unit * 9
-    // });
-    // DrawPath(ctx, path);
-
-}
-
-function drawStats(state) {
-    document.getElementById("greenstat").innerHTML = state.hitCount;
-    document.getElementById("graystat").innerHTML = state.closeCount;
-    document.getElementById("whitestat").innerHTML = state.missCount;
-    document.getElementById("tickstat").innerHTML = state.guessedGrids.length;
-
 }
 
 function onClear1x1() {
