@@ -1,109 +1,234 @@
+/** 
+ * Draws a rounded rectangle using the current state of the canvas.  
+ * If you omit the last three params, it will draw a rectangle  
+ * outline with a 5 pixel border radius  
+ * @param {Number} x The top left x coordinate 
+ * @param {Number} y The top left y coordinate  
+ * @param {Number} width The width of the rectangle  
+ * @param {Number} height The height of the rectangle 
+ * @param {Object} radius All corner radii. Defaults to 0,0,0,0; 
+ * @param {Boolean} fill Whether to fill the rectangle. Defaults to false. 
+ * @param {Boolean} stroke Whether to stroke the rectangle. Defaults to true. 
+ */
+CanvasRenderingContext2D.prototype.roundRect = function (x, y, width, height, radius, fill, stroke) {
+    var cornerRadius = { upperLeft: radius, upperRight: radius, lowerLeft: radius, lowerRight: radius };
+    if (typeof stroke == "undefined") {
+        stroke = true;
+    }
+    if (typeof radius === "object") {
+        for (var side in radius) {
+            cornerRadius[side] = radius[side];
+        }
+    }
+
+    this.beginPath();
+    this.moveTo(x + cornerRadius.upperLeft, y);
+    this.lineTo(x + width - cornerRadius.upperRight, y);
+    this.quadraticCurveTo(x + width, y, x + width, y + cornerRadius.upperRight);
+    this.lineTo(x + width, y + height - cornerRadius.lowerRight);
+    this.quadraticCurveTo(x + width, y + height, x + width - cornerRadius.lowerRight, y + height);
+    this.lineTo(x + cornerRadius.lowerLeft, y + height);
+    this.quadraticCurveTo(x, y + height, x, y + height - cornerRadius.lowerLeft);
+    this.lineTo(x, y + cornerRadius.upperLeft);
+    this.quadraticCurveTo(x, y, x + cornerRadius.upperLeft, y);
+    this.closePath();
+    if (stroke) {
+        this.stroke();
+    }
+    if (fill) {
+        this.fill();
+    }
+}
+class Pnt {
+    constructor(x, y) {
+        this.x = x;
+        this.y = y;
+    }
+}
+
+var config = {
+    size1x: 65,
+    gap: 6
+}
+
+var dim = {};
+{
+    dim.size1x = config.size1x;
+    dim.size3x = dim.size1x * 3;
+    dim.gap = config.gap;
+    dim.btn1x = Math.floor((dim.size1x * 3 - dim.gap * 2) / 3);
+    dim.width = dim.size1x * 9 + dim.gap * 2;
+    dim.heigh = dim.width + dim.btn1x * 3 + dim.gap * 4;
+    dim.statsY = dim.size3x * 3 + dim.gap * 3;
+    dim.numbtnY = dim.size3x * 3 + dim.gap * 5 + dim.btn1x;
+    dim.actbtnY = dim.size3x * 3 + dim.gap * 6 + dim.btn1x * 2;
+    dim.border3x = 1;
+}
+
+console.log((dim.size1x * 3 - dim.gap * 2) / 3);
+
+console.log(dim);
+
+var tlwh = {}; //topleft and width height
+{
+    tlwh["tutorial"] = [new Pnt(0, dim.gap), new Pnt(dim.btn1x, dim.btn1x)];
+    tlwh["sudokle"] = [new Pnt(dim.btn1x * 2 + dim.gap * 2, dim.gap), new Pnt(dim.size3x, dim.btn1x)];
+    tlwh["guesscount"] = [new Pnt(dim.btn1x * 5 + dim.gap * 5, dim.gap), new Pnt(dim.btn1x * 2 + dim.gap, dim.btn1x)];
+    tlwh["stats"] = [new Pnt(dim.btn1x * 7 + dim.gap * 7, dim.gap), new Pnt(dim.btn1x, dim.btn1x)];
+    tlwh["settings"] = [new Pnt(dim.btn1x * 8 + dim.gap * 8, dim.gap), new Pnt(dim.btn1x, dim.btn1x)];
+
+    tlwh["0x0"] = [new Pnt(0, dim.btn1x + dim.gap * 2), new Pnt(dim.size3x, dim.size3x)];
+    tlwh["1x0"] = [new Pnt(dim.size3x + dim.gap, dim.btn1x + dim.gap * 2), new Pnt(dim.size3x, dim.size3x)];
+    tlwh["2x0"] = [new Pnt(dim.size3x * 2 + dim.gap * 2, dim.btn1x + dim.gap * 2), new Pnt(dim.size3x, dim.size3x)];
+    tlwh["0x1"] = [new Pnt(0, dim.size3x + dim.gap * 3 + dim.btn1x), new Pnt(dim.size3x, dim.size3x)];
+    tlwh["1x1"] = [new Pnt(dim.size3x + dim.gap, dim.size3x + dim.gap * 3 + dim.btn1x), new Pnt(dim.size3x, dim.size3x)];
+    tlwh["2x1"] = [new Pnt(dim.size3x * 2 + dim.gap * 2, dim.size3x + dim.gap * 3 + dim.btn1x), new Pnt(dim.size3x, dim.size3x)];
+    tlwh["0x2"] = [new Pnt(0, dim.size3x * 2 + dim.gap * 4 + dim.btn1x), new Pnt(dim.size3x, dim.size3x)];
+    tlwh["1x2"] = [new Pnt(dim.size3x + dim.gap, dim.size3x * 2 + dim.gap * 4 + dim.btn1x), new Pnt(dim.size3x, dim.size3x)];
+    tlwh["2x2"] = [new Pnt(dim.size3x * 2 + dim.gap * 2, dim.size3x * 2 + dim.gap * 4 + dim.btn1x), new Pnt(dim.size3x, dim.size3x)];
+
+
+    tlwh["numbtn1"] = [new Pnt(0, dim.numbtnY), new Pnt(dim.btn1x, dim.btn1x)];
+    tlwh["numbtn2"] = [new Pnt(dim.btn1x * 1 + dim.gap * 1, dim.numbtnY), new Pnt(dim.btn1x, dim.btn1x)];
+    tlwh["numbtn3"] = [new Pnt(dim.btn1x * 2 + dim.gap * 2, dim.numbtnY), new Pnt(dim.btn1x, dim.btn1x)];
+    tlwh["numbtn4"] = [new Pnt(dim.btn1x * 3 + dim.gap * 3, dim.numbtnY), new Pnt(dim.btn1x, dim.btn1x)];
+    tlwh["numbtn5"] = [new Pnt(dim.btn1x * 4 + dim.gap * 4, dim.numbtnY), new Pnt(dim.btn1x, dim.btn1x)];
+    tlwh["numbtn6"] = [new Pnt(dim.btn1x * 5 + dim.gap * 5, dim.numbtnY), new Pnt(dim.btn1x, dim.btn1x)];
+    tlwh["numbtn7"] = [new Pnt(dim.btn1x * 6 + dim.gap * 6, dim.numbtnY), new Pnt(dim.btn1x, dim.btn1x)];
+    tlwh["numbtn8"] = [new Pnt(dim.btn1x * 7 + dim.gap * 7, dim.numbtnY), new Pnt(dim.btn1x, dim.btn1x)];
+    tlwh["numbtn9"] = [new Pnt(dim.btn1x * 8 + dim.gap * 8, dim.numbtnY), new Pnt(dim.btn1x, dim.btn1x)];
+
+    // tut stats settings
+    //  space undo del rand space guess:eye space
+    // undo del rand guessguessguess stats settings tut    
+
+    //tlwh["undobtn"] = [new Pnt(0, dim.actbtnY), new Pnt(dim.btn1x, dim.btn1x)];
+    tlwh["delbtn"] = [new Pnt(dim.btn1x + dim.gap, dim.actbtnY), new Pnt(dim.btn1x, dim.btn1x)];
+    tlwh["randbtn"] = [new Pnt(dim.btn1x * 2 + dim.gap * 2, dim.actbtnY), new Pnt(dim.btn1x, dim.btn1x)];
+    tlwh["guessbtn"] = [new Pnt(dim.btn1x * 3 + dim.gap * 3, dim.actbtnY), new Pnt(dim.size3x, dim.btn1x)];
+    tlwh["statsbtn"] = [new Pnt(dim.btn1x * 6 + dim.gap * 6, dim.actbtnY), new Pnt(dim.btn1x, dim.btn1x)];
+    //tlwh["settingsbtn"] = [new Pnt(dim.btn1x * 7 + dim.gap * 7, dim.actbtnY), new Pnt(dim.btn1x, dim.btn1x)];
+    //tlwh["tutorialbtn"] = [new Pnt(dim.btn1x * 8 + dim.gap * 8, dim.actbtnY), new Pnt(dim.btn1x, dim.btn1x)];
+
+
+}
+
+var colors = {
+    hit: "rgba(106, 170, 100, 1)",
+    miss: "rgba(120, 124, 126, 1)",
+    close: "rgba(201, 180, 88, 1)",
+    grid: "#FFFFFF",
+    gridAlt: "#EEEEEE",
+    btn: "#d3d6da"
+}
+
+var tlwhRoundCorners = {};
+for (const key in tlwh) {
+    if (key.indexOf("btn") >= 0) {
+        tlwhRoundCorners[key] = 5;
+    } else {
+        tlwhRoundCorners[key] = 0;
+    }
+}
+
+
+var tlwhStrokes = {};
+for (const key in tlwh) {
+    if (key.indexOf("btn") >= 0) {
+        tlwhStrokes[key] = 0;
+    } else {
+        tlwhStrokes[key] = dim.border3x;
+    }
+}
+
+
+var tlwhFills = {};
+{
+    for (const key in tlwh) {
+        if (key.indexOf("btn") >= 0) {
+            tlwhFills[key] = colors.btn;
+        } else {
+            tlwhFills[key] = colors.grid;
+        }
+    }
+    var grays = ["1x0", "0x1", "2x1", "1x2"];
+    for (const key in grays) {
+        tlwhFills[grays[key]] = colors.gridAlt;
+    }
+}
+var tlwhText = {};
+for (const key in tlwh) {
+    tlwhText[key] = key;
+}
+
 var ctx;
 var canvas;
-var dim = {
-    border3x: 1,
-    border1x: 0.25,
-    gap3x: 10,
-    unit3x: 186,
-    unit: 62
+
+
+
+function walkPath(ctx, points, close = true) {
+    ctx.beginPath();
+
+    for (let i = 0; i < points.length; i++) {
+        var point = points[i];
+        if (i == 0) {
+            ctx.moveTo(point.x, point.y);
+        } else {
+            ctx.lineTo(point.x, point.y);
+        }
+    }
+    if (close)
+        ctx.closePath();
 }
-var colors = {
-    border1x: "#000000",
-    border3x: "#000000"
+
+function DrawText(ctx, text, fontSize, at, fontColor) {
+    ctx.save();
+    ctx.fillStyle = fontColor;
+    ctx.font = fontSize + "em Roboto";
+    ctx.fillText(text, at.x, at.y);
+    ctx.restore();
 }
 
-var grids = [
-    new Point(0, 0),
-    new Point(0, 1),
-    new Point(0, 2),
-    new Point(1, 0),
-    new Point(1, 1),
-    new Point(1, 2),
-    new Point(2, 0),
-    new Point(2, 1),
-    new Point(2, 2),
-]
-
-dim.btnunit = Math.floor((dim.unit * 9 + dim.gap3x * 2 - dim.gap3x * 8) / 9);
-
-var gridsXY = grids.map(
-    p => new Point(
-        dim.unit3x * p.x + (p.x >= 0 ? dim.gap3x * p.x : 0),
-        dim.unit3x * p.y + (p.y >= 0 ? dim.gap3x * p.y : 0)
-    ))
-
-var width = dim.gap3x * 6 + dim.unit * 9 + dim.border1x * 18;
-var height = dim.gap3x * 8 + dim.unit * 12 + dim.border1x * 24;
-
-console.log("Canvas should be size:" + width + "x" + height);
 
 function rawDraw(state) {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
-    ctx.translate(0.5, 0.5)
-    gridsXY.forEach(p => {
-        ctx.translate(p.x, p.y);
-        ctx.lineWidth = dim.border3x;
-        walkPath(ctx, [new Point(0, 0),
-        new Point(dim.unit3x, 0),
-        new Point(dim.unit3x, dim.unit3x),
-        new Point(0, dim.unit3x)
-        ])
-        ctx.stroke();
-
-        ctx.lineWidth = dim.border1x;
-        walkPath(ctx, [new Point(dim.unit, 0), new Point(dim.unit, dim.unit3x)], false);
-        ctx.stroke();
-        walkPath(ctx, [new Point(dim.unit * 2, 0), new Point(dim.unit * 2, dim.unit3x)], false);
-        ctx.stroke();
-        walkPath(ctx, [new Point(0, dim.unit), new Point(dim.unit3x, dim.unit)], false);
-        ctx.stroke();
-        walkPath(ctx, [new Point(0, dim.unit * 2), new Point(dim.unit3x, dim.unit * 2)], false);
-        ctx.stroke();
-
-
-        ctx.translate(-p.x, -p.y);
-
-    });
-
-    var width = dim.unit3x * 3 + dim.gap3x * 2;
-    var yoff = dim.unit3x * 3 + dim.gap3x * 3;
+    ctx.translate(0.5, 0.5);
     ctx.lineWidth = dim.border3x;
-    walkPath(ctx, [
-        new Point(0, yoff),
-        new Point(dim.unit3x, yoff),
-        new Point(dim.unit3x, yoff + dim.unit),
-        new Point(0, yoff + dim.unit)
-    ])
-    ctx.stroke();
-    DrawText(ctx, "Sudokle #024", 1.5, new Point(dim.unit3x * 0.45 + dim.gap3x, dim.unit3x * 3 + dim.gap3x * 3 + dim.unit / 2));
+    for (const key in tlwh) {
+        let tl = tlwh[key][0];
+        let wh = tlwh[key][1];
+        if (tlwhRoundCorners[key] > 0) {
+            if (tlwhFills[key]) {
+                ctx.save();
+                ctx.fillStyle = tlwhFills[key];
+                ctx.roundRect(tl.x, tl.y, wh.x, wh.y, tlwhRoundCorners[key], true, false);
+                ctx.restore();
+            }
+        } else {
+            walkPath(ctx, [
+                tl,
+                new Pnt(tl.x + wh.x, tl.y),
+                new Pnt(tl.x + wh.x, tl.y + wh.y),
+                new Pnt(tl.x, tl.y + wh.y),
+            ]);
+            if (tlwhStrokes[key] > 0) {
+                ctx.save();
+                ctx.lineWidth = tlwhStrokes[key];
+                ctx.stroke();
+                ctx.restore();
+            }
+            if (tlwhFills[key]) {
+                ctx.save();
+                ctx.fillStyle = tlwhFills[key];
+                ctx.fill();
+                ctx.restore();
+            }
+        }
 
-    yoff += Math.floor((dim.unit - dim.btnunit)/2);
-    [3, 4, 5].forEach((num, index) => {
-        console.log(num)
-        var x = num * (dim.btnunit + dim.gap3x);
-        walkPath(ctx, [
-            new Point(x, yoff),
-            new Point(x + dim.btnunit, yoff),
-            new Point(x + dim.btnunit, yoff + dim.btnunit),
-            new Point(x, yoff + dim.btnunit)
-        ]);
-        ctx.stroke();
-    });
 
 
 
-    var numY = dim.unit3x * 3 + dim.unit + dim.gap3x * 4;
-    [1, 2, 3, 4, 5, 6, 7, 8, 9].forEach((num, index) => {
-        var x = index * (dim.btnunit + dim.gap3x);
-        walkPath(ctx, [
-            new Point(x, numY),
-            new Point(x + dim.btnunit, numY),
-            new Point(x + dim.btnunit, numY + dim.btnunit),
-            new Point(x, numY + dim.btnunit)
-        ])
-        ctx.stroke();
-        DrawText(ctx, num * 100, 1, new Point(x + dim.btnunit / 2, numY + dim.btnunit / 2))
-    });
+    }
 
 }
 
