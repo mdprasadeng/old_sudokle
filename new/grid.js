@@ -22,7 +22,7 @@ function get3x3GridXY(x, y) {
 }
 
 
-function newGrid(prefilled) {
+function newGrid(prefilled, defval) {
     var grid = [];
     for (let i = 0; i < 9; i++) {
         grid[i] = [];
@@ -30,7 +30,7 @@ function newGrid(prefilled) {
             if (prefilled && prefilled[i] && prefilled[i][j] && prefilled[i][j] > -1) {
                 grid[i][j] = prefilled[i][j];
             } else {
-                grid[i][j] = undefined;
+                grid[i][j] = !!defval ? defval() : undefined;
             }
         }
     }
