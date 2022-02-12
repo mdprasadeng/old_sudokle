@@ -567,13 +567,15 @@ function walkAndDraw(state, gifcopy) {
 
     }
 
-    if (!!gifcopy) {
-        gifcopy();
-    }
 
     textDrawCalls.forEach(element => {
         ctx.drawText(...element);
     });
+
+    if (!!gifcopy) {
+        gifcopy();
+    }
+
 
 }
 
@@ -669,8 +671,11 @@ function onLoad() {
             ctx = canvas.getContext('2d');
             ctx.textBaseline = 'middle';
             ctx.textAlign = 'center';
-            init()
-            walkAndDraw(state);
+            init();
+            walkAndDraw(state, () => {
+                var delay = 1000;
+                gif.addFrame(ctx, { delay: delay, copy: true })
+            });
         });
 
 
