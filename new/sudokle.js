@@ -107,8 +107,9 @@ var dim = {};
     dim.gap = config.gap;
     dim.btn = Math.floor((dim.box - dim.gap * 2) / 3);
 
-    dim.text = (dim.btn - dim.gap * 2) / 2;
-    dim.guessTxtSize = dim.text * 0.65;
+    dim.titletxt = 45;
+    dim.text = 25
+    dim.guessTxtSize = 18;
 }
 
 var colors = {
@@ -116,7 +117,7 @@ var colors = {
     miss: "#787c7e",
     close: "#c9b458",
     selectStroke: "#000000",
-    selectFill: "#CCCCCCA5",
+    selectFill: "#CCCCCC85",
     unitStroke: "#000000",
     unitAltStroke: "#000000",
     unit: "#FFFFFF",
@@ -124,14 +125,15 @@ var colors = {
     btn: "#d3d6da",
     debug: "#AA0000",
     white: "#FFFFFF",
-    black: "#000000"
+    black: "#000000",
+    title: "#4D4D4D"
 }
 var ctx;
 var canvas;
 
 class State {
     constructor() {
-        this.puzzleNo = 123;
+        this.puzzleNo = 8888;
         this.sx = 0;
         this.sy = 0;
         this.answerGrid = fillGrid();
@@ -160,7 +162,7 @@ function registerAction(x, y, width, height, args, func) {
 }
 
 
-function walkAndDraw(state) {
+function walkAndDraw(state, gifcopy) {
 
     actions = [];
     var textDrawCalls = []
@@ -174,7 +176,7 @@ function walkAndDraw(state) {
     ctx.textAlign = 'center';
 
     var offx = dim.gap;
-    var offy = 0;
+    var offy = dim.gap;
     var x = offx;
     var y = offy;
     var lx = x;
@@ -185,54 +187,145 @@ function walkAndDraw(state) {
     // header
     {
         //tutorial ?
-        lx = x, ly = y, w = dim.unit, h = dim.unit;
-        ctx.walkRoundRect(new Pnt(lx, ly), new Pnt(w, h), 5);
-        //ctx.fillWStyle(colors.btn);
-        ctx.drawText("?", new Pnt(lx + w / 2, ly + h / 2), dim.text + 10, colors.black);
-        x += w;
+        lx = x;
+        ly = y;
+        w = dim.unit * 0.6, h = dim.titletxt;
+        ctx.walkRoundRect(new Pnt(lx, ly), new Pnt(w, h), 4);
+        ctx.fillWStyle(colors.btn);
+        ctx.drawText("?", new Pnt(lx + w / 2, ly + h / 2), dim.text, colors.black);
+        registerAction(lx, ly, w, h, [], (p) => {
+            console.log("tutorial");
+        });
 
         //settings ⚙
-        lx = x, ly = y, w = dim.unit, h = dim.unit;
-        ctx.walkRoundRect(new Pnt(lx, ly), new Pnt(w, h), 5);
-        //ctx.fillWStyle(colors.btn);
-        ctx.drawText("⚙", new Pnt(lx + w / 2, ly + h / 2), dim.text + 20, colors.black);
+        lx = x + dim.unit * 0.8
+        ctx.walkRoundRect(new Pnt(lx, ly), new Pnt(w, h), 4);
+        ctx.fillWStyle(colors.btn);
+        ctx.drawText("⚙", new Pnt(lx + w / 2, ly + h / 2), dim.text, colors.black);
+        registerAction(lx, ly, w, h, [], (p) => {
+            console.log("settings");
+        });
 
 
-        //Sudokle #No
-        x = offx + dim.box + dim.gap;
-        lx = x, ly = y, w = dim.box, h = dim.unit;
-        ctx.walkRect(new Pnt(lx, ly), new Pnt(w, h), 5);
-        ctx.strokeWStyle(colors.debug);
-        ctx.drawText("Sudokle #" + state.puzzleNo, new Pnt(lx + w / 2, ly + h / 2), dim.text, colors.black);
-        x += w;
-        x += dim.gap;
+        //streak 📊
+        lx = x + dim.box * 3 - dim.unit * 0.4;
+        ctx.walkRoundRect(new Pnt(lx, ly), new Pnt(w, h), 4);
+        ctx.fillWStyle(colors.btn);
+        ctx.drawText("📊", new Pnt(lx + w / 2, ly + h / 2), dim.text, colors.black);
+        registerAction(lx, ly, w, h, [], (p) => {
+            console.log("strek");
+        });
+
+        //Sudokle 
+        ctx.textBaseline = 'alphabetic';
+        ctx.textAlign = 'center';
+        ctx.drawText("Sudokle", new Pnt(x + dim.box + dim.gap + dim.unit * 0.75, y + dim.titletxt), dim.titletxt - 5, colors.title);
+
+        ctx.drawText("#" + state.puzzleNo, new Pnt(x + dim.box + dim.unit * 2.8 + dim.gap * 1.5, y + dim.titletxt), dim.titletxt - 15, colors.title);
 
 
         //yellow and gray count
-        lx = x, ly = y, w = dim.unit, h = dim.unit;
+        lx = offx + dim.box * 2 + dim.gap * 2 + dim.unit * 0.85;
+        ly = y, w = dim.unit * 1.5, h = dim.titletxt;
+        {
+            let points = [];
+            let wedge = dim.unit / 2;
+
+            points.push(new Pnt(lx, ly));
+            points.push(new Pnt(lx + wedge, ly));
+            points.push(new Pnt(lx, ly + wedge));
+            ctx.walkPath(points);
+            ctx.fillWStyle(colors.close);
+        }
+        {
+            let points = [];
+            let wedge = dim.unit / 2;
+
+            points.push(new Pnt(lx + w, ly));
+            points.push(new Pnt(lx + w - wedge, ly));
+            points.push(new Pnt(lx + w, ly + wedge));
+            ctx.walkPath(points);
+            ctx.fillWStyle(colors.miss);
+        }
+        let old = ctx.lineWidth;
+        ctx.lineWidth = 1;
         ctx.walkRect(new Pnt(lx, ly), new Pnt(w, h), 5);
-        ctx.strokeWStyle(colors.debug);
-        ctx.drawText("79", new Pnt(lx + w / 2, ly + h / 2), dim.text, colors.black);
-        x += w;
-        x += dim.gap;
-        x += dim.btn + dim.gap;
+        ctx.strokeWStyle(colors.black);
+        ctx.drawText("" + (state.missCount + state.closeCount), new Pnt(lx + w / 2, y + dim.titletxt - dim.gap), dim.text + 5, colors.black);
+        ctx.lineWidth = old;
 
-        //streak 📊
-        x = dim.box * 3 + dim.gap * 2 - dim.unit;
-        lx = x, ly = y, w = dim.unit, h = dim.unit;
-        ctx.walkRoundRect(new Pnt(lx, ly), new Pnt(w, h), 5);
-        //ctx.fillWStyle(colors.btn);
-        ctx.drawText("📊", new Pnt(lx + w / 2, ly + h / 2), dim.text, colors.black);
-        x += w;
-        x += dim.gap;
-
+        ctx.textBaseline = 'middle';
+        ctx.textAlign = 'center';
     }
     x = offx;
-    y = offy + dim.unit + dim.gap
+    y = offy + dim.titletxt + dim.gap * 2;
+
+    let selectCellPoints;
 
     {
-        let selectCellPoints;
+
         let selectPoints = [];
+
+        let ui = state.sx % 3;
+        let uj = state.sy % 3;
+        let bi = (state.sx - ui) / 3;
+        let bj = (state.sy - uj) / 3;
+
+        lx = x + bi * dim.box + ui * dim.unit + (bi > 0 ? (bi) * dim.gap : 0);
+        ly = y + bj * dim.box + uj * dim.unit + (bj > 0 ? (bj) * dim.gap : 0);
+        w = dim.unit;
+        h = dim.unit;
+
+        selectCellPoints = [
+            new Pnt(lx, ly),
+            new Pnt(lx + w, ly),
+            new Pnt(lx + w, ly + h),
+            new Pnt(lx, ly + h)
+        ];
+
+        var start = new Pnt(
+            x + bi * dim.box + (bi > 0 ? bi * dim.gap : 0),
+            y + bj * dim.box + (bj > 0 ? bj * dim.gap : 0));
+
+        selectPoints.push(new Pnt(start.x, start.y));
+
+        selectPoints.push(new Pnt(start.x, start.y + uj * dim.unit));
+        selectPoints.push(new Pnt(x, start.y + uj * dim.unit));
+        selectPoints.push(new Pnt(x, start.y + (uj + 1) * dim.unit));
+        selectPoints.push(new Pnt(start.x, start.y + (uj + 1) * dim.unit));
+
+        selectPoints.push(new Pnt(start.x, start.y + dim.box));
+
+        selectPoints.push(new Pnt(start.x + ui * dim.unit, start.y + dim.box));
+        selectPoints.push(new Pnt(start.x + ui * dim.unit, y + 3 * dim.box + 2 * dim.gap));
+        selectPoints.push(new Pnt(start.x + (ui + 1) * dim.unit, y + 3 * dim.box + 2 * dim.gap));
+        selectPoints.push(new Pnt(start.x + (ui + 1) * dim.unit, start.y + dim.box));
+
+        selectPoints.push(new Pnt(start.x + dim.box, start.y + dim.box));
+
+        selectPoints.push(new Pnt(start.x + dim.box, start.y + (uj + 1) * dim.unit));
+        selectPoints.push(new Pnt(x + 3 * dim.box + 2 * dim.gap, start.y + (uj + 1) * dim.unit));
+        selectPoints.push(new Pnt(x + 3 * dim.box + 2 * dim.gap, start.y + (uj) * dim.unit));
+        selectPoints.push(new Pnt(start.x + dim.box, start.y + (uj) * dim.unit));
+
+
+        selectPoints.push(new Pnt(start.x + dim.box, start.y));
+
+        selectPoints.push(new Pnt(start.x + (ui + 1) * dim.unit, start.y));
+        selectPoints.push(new Pnt(start.x + (ui + 1) * dim.unit, y));
+        selectPoints.push(new Pnt(start.x + (ui) * dim.unit, y));
+        selectPoints.push(new Pnt(start.x + (ui) * dim.unit, start.y));
+
+
+        if (state.hitCount != 81 && !!gifcopy == false) {
+            ctx.walkPath(selectPoints);
+            ctx.fillWStyle(colors.selectFill);
+            ctx.walkPath(selectCellPoints);
+            ctx.fillWStyle(colors.white);
+        }
+    }
+
+    {
         for (let bi = 0; bi < 3; bi++) {
             for (let bj = 0; bj < 3; bj++) {
 
@@ -253,50 +346,7 @@ function walkAndDraw(state) {
                             ctx.fillWStyle(colors.hit);
                         }
 
-                        if (state.sx == gx && state.sy == gy) {
-                            selectCellPoints = [
-                                new Pnt(lx, ly),
-                                new Pnt(lx + w, ly),
-                                new Pnt(lx + w, ly + h),
-                                new Pnt(lx, ly + h)
-                            ];
-                            
-                            var start = new Pnt(
-                                x + bi * dim.box + (bi > 0 ? bi * dim.gap : 0),
-                                y + bj * dim.box + (bj > 0 ? bj * dim.gap : 0));
 
-                            selectPoints.push(new Pnt(start.x, start.y));
-
-                            selectPoints.push(new Pnt(start.x, start.y + uj * dim.unit));
-                            selectPoints.push(new Pnt(x, start.y + uj * dim.unit));
-                            selectPoints.push(new Pnt(x, start.y + (uj + 1) * dim.unit));
-                            selectPoints.push(new Pnt(start.x, start.y + (uj + 1) * dim.unit));
-
-                            selectPoints.push(new Pnt(start.x, start.y + dim.box));
-
-                            selectPoints.push(new Pnt(start.x + ui * dim.unit, start.y + dim.box));
-                            selectPoints.push(new Pnt(start.x + ui * dim.unit, y + 3 * dim.box + 2 * dim.gap));
-                            selectPoints.push(new Pnt(start.x + (ui + 1) * dim.unit, y + 3 * dim.box + 2 * dim.gap));
-                            selectPoints.push(new Pnt(start.x + (ui + 1) * dim.unit, start.y + dim.box));
-
-                            selectPoints.push(new Pnt(start.x + dim.box, start.y + dim.box));
-
-                            selectPoints.push(new Pnt(start.x + dim.box, start.y + (uj +1) * dim.unit));
-                            selectPoints.push(new Pnt(x + 3 * dim.box + 2 * dim.gap, start.y + (uj +1) * dim.unit));
-                            selectPoints.push(new Pnt(x + 3 * dim.box + 2 * dim.gap, start.y + (uj) * dim.unit));    
-                            selectPoints.push(new Pnt(start.x + dim.box, start.y + (uj) * dim.unit));    
-
-
-                            selectPoints.push(new Pnt(start.x + dim.box, start.y));
-
-                            selectPoints.push(new Pnt(start.x + (ui + 1) * dim.unit, start.y));
-                            selectPoints.push(new Pnt(start.x + (ui + 1) * dim.unit, y));
-                            selectPoints.push(new Pnt(start.x + (ui) * dim.unit, y));
-                            selectPoints.push(new Pnt(start.x + (ui) * dim.unit, start.y));
-
-
-
-                        }
 
                         if (!!txt) {
                             textDrawCalls.push([
@@ -306,50 +356,81 @@ function walkAndDraw(state) {
 
                         let guessPlace = 1;
                         let wedge = dim.unit / 2;
+                        // if (bi==1 && bj==1 && ui==1 && uj==1) {
+                        //     guesses = new Map();
+                        //     guesses.set(1, MISS);
+                        //     guesses.set(2, HIT);
+                        //     guesses.set(3, HIT);
+                        //     guesses.set(4, MISS);
+                        //     guesses.set(6, MISS);
+                        //     guesses.set(7, HIT);
+                        //     guesses.set(8, HIT);
+                        //     guesses.set(9, MISS);
+                        // }
+
                         if (!!guesses) {
                             guesses.forEach(function (value, key) {
                                 let points = [];
                                 let textAt;
+                                let textSize = dim.guessTxtSize;
                                 switch (guessPlace) {
                                     case 1:
                                         points.push(new Pnt(lx, ly));
                                         points.push(new Pnt(lx + wedge, ly));
                                         points.push(new Pnt(lx, ly + wedge));
-                                        textAt = new Pnt(lx + wedge / 3, ly + wedge / 3);
+                                        textAt = new Pnt(lx + wedge / 3 - 1, ly + wedge / 3 -1);
                                         break;
                                     case 2:
                                         points.push(new Pnt(lx + dim.unit, ly));
                                         points.push(new Pnt(lx + dim.unit - wedge, ly));
                                         points.push(new Pnt(lx + dim.unit, ly + wedge));
-                                        textAt = new Pnt(lx + dim.unit - wedge / 3, ly + wedge / 3);
+                                        textAt = new Pnt(lx + dim.unit - wedge / 3 + 1, ly + wedge / 3 -1);
                                         break;
                                     case 3:
                                         points.push(new Pnt(lx + dim.unit, ly + dim.unit));
                                         points.push(new Pnt(lx + dim.unit - wedge, ly + dim.unit));
                                         points.push(new Pnt(lx + dim.unit, ly + dim.unit - wedge));
-                                        textAt = new Pnt(lx + dim.unit - wedge / 3, ly + dim.unit - wedge / 3);
+                                        textAt = new Pnt(lx + dim.unit - wedge / 3 + 1, ly + dim.unit - wedge / 3 + 1);
                                         break
                                     case 4:
                                         points.push(new Pnt(lx, ly + dim.unit));
                                         points.push(new Pnt(lx + wedge, ly + dim.unit));
                                         points.push(new Pnt(lx, ly + dim.unit - wedge));
-                                        textAt = new Pnt(lx + wedge / 3, ly + dim.unit - wedge / 3);
+                                        textAt = new Pnt(lx + wedge / 3 -1, ly + dim.unit - wedge / 3 + 1);
                                         break
                                     case 5:
+                                        textSize = dim.guessTxtSize - 5;
+                                        points.push(new Pnt(lx + wedge / 2, ly + wedge / 2));
+                                        points.push(new Pnt(lx + wedge, ly));
+                                        points.push(new Pnt(lx + wedge + wedge / 2, ly + wedge / 2));
+                                        textAt = new Pnt(lx + wedge, ly + wedge / 3);
                                         break
                                     case 6:
+                                        textSize = dim.guessTxtSize - 5;
+                                        points.push(new Pnt(lx + wedge + wedge / 2, ly + wedge / 2));
+                                        points.push(new Pnt(lx + dim.unit, ly + wedge));
+                                        points.push(new Pnt(lx + wedge + wedge / 2, ly + wedge + wedge / 2));
+                                        textAt = new Pnt(lx + dim.unit - wedge / 3, ly + wedge)
                                         break
                                     case 7:
-                                        break
+                                        textSize = dim.guessTxtSize - 5;
+                                        points.push(new Pnt(lx + wedge + wedge / 2, ly + wedge + wedge / 2));
+                                        points.push(new Pnt(lx + wedge, ly + dim.unit));
+                                        points.push(new Pnt(lx + wedge / 2, ly + wedge + wedge / 2));
+                                        textAt = new Pnt(lx + wedge, ly + dim.unit - wedge / 3 + 2);
+                                        break;
                                     case 8:
-                                        break
-                                    case 9:
+                                        textSize = dim.guessTxtSize - 5;
+                                        points.push(new Pnt(lx + wedge / 2, ly + wedge + wedge / 2));
+                                        points.push(new Pnt(lx, ly + wedge));
+                                        points.push(new Pnt(lx + wedge / 2, ly + wedge / 2));
+                                        textAt = new Pnt(lx + wedge / 3, ly + wedge);
                                         break
                                 }
                                 ctx.walkPath(points);
                                 ctx.fillWStyle(value == MISS ? colors.miss : colors.close);
                                 textDrawCalls.push([
-                                    "" + key, textAt, dim.guessTxtSize, colors.white
+                                    "" + key, textAt, textSize, colors.white
                                 ]);
                                 guessPlace++;
                             });
@@ -398,18 +479,7 @@ function walkAndDraw(state) {
 
             }
         }
-        if (!!selectCellPoints) {
-            var old = ctx.lineWidth;
-            ctx.lineWidth = 2;
-            
-            ctx.walkPath(selectCellPoints);
-            ctx.strokeWStyle(colors.selectStroke);
 
-            ctx.walkPath(selectPoints);
-            ctx.fillWStyle(colors.selectFill);
-
-            ctx.lineWidth = old;
-        }
     }
 
     x = offx;
@@ -466,6 +536,7 @@ function walkAndDraw(state) {
         x += dim.box + dim.gap;
         registerAction(lx, ly, w, h, [], (p) => {
             onGuess();
+            return true;
         });
 
 
@@ -490,7 +561,14 @@ function walkAndDraw(state) {
             onRandom9x9();
         });
 
+        //console.log("Height:" + (ly + h));
+        //console.log("Width:" + (lx + w + dim.btn + dim.gap));
 
+
+    }
+
+    if (!!gifcopy) {
+        gifcopy();
     }
 
     textDrawCalls.forEach(element => {
@@ -571,8 +649,8 @@ function onLoad() {
     gif = new GIF({
         workers: 2,
         quality: 10,
-        width: canvasSize,
-        height: canvasSize,
+        width: canvas.width,
+        height: canvas.height - 2 * dim.btn - dim.gap,
         debug: true
     });
 
@@ -615,8 +693,10 @@ function onMouseDown(evt) {
     actions.forEach(action => {
         if (at.x >= action.x && at.x <= (action.x + action.width)) {
             if (at.y >= action.y && at.y <= (action.y + action.height)) {
-                action.func(new Pnt(at.x - action.x, at.y - action.y), ...action.args);
-                walkAndDraw(state);
+                var skipRedraw = action.func(new Pnt(at.x - action.x, at.y - action.y), ...action.args);
+                if (!skipRedraw) {
+                    walkAndDraw(state);
+                }
             }
         }
     })
@@ -662,7 +742,13 @@ function onGuess() {
     }
     if (!someGuessesAreMade) return;
     check(state);
-    gif.addFrame(ctx, { delay: 500, copy: true });
+    walkAndDraw(state, () => {
+        var delay = 500;
+        if (state.hitCount == 81) {
+            delay += 2000;
+        }
+        gif.addFrame(ctx, { delay: delay, copy: true })
+    });
 
     if (state.hitCount == 81) {
         gif.on('finished', function (blob) {
@@ -733,7 +819,6 @@ function onKeyDown(key) {
             break;
         case "Enter":
             onGuess();
-            walkAndDraw(state);
             break;
         case "Backspace":
             onClear1x1();
