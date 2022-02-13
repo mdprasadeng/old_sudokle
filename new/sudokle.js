@@ -123,6 +123,7 @@ var colors = {
     unit: "#FFFFFF",
     unitAlt: "#AAAAAA",
     btn: "#d3d6da",
+    btndisabled: "#787c7e",
     debug: "#AA0000",
     white: "#FFFFFF",
     black: "#000000",
@@ -150,21 +151,26 @@ class State {
 
 var actions = [];
 
-function registerAction(x, y, width, height, args, func) {
-    actions.push({
-        x: x,
-        y: y,
-        width: width,
-        height: height,
-        args: args,
-        func: func
-    });
-}
 
 
-function walkAndDraw(state, gifcopy) {
 
-    actions = [];
+function walkAndDraw(state, gifcopy, registerActions) {
+
+    var registerAction = function (x, y, width, height, args, func) {
+        if (registerActions) {
+            actions.push({
+                x: x,
+                y: y,
+                width: width,
+                height: height,
+                args: args,
+                func: func
+            });
+        }
+    }
+    if (registerActions) {
+        actions = [];
+    }
     var textDrawCalls = []
 
     ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -186,35 +192,6 @@ function walkAndDraw(state, gifcopy) {
     var t;
     // header
     {
-        //tutorial ?
-        lx = x;
-        ly = y;
-        w = dim.unit * 0.6, h = dim.titletxt;
-        ctx.walkRoundRect(new Pnt(lx, ly), new Pnt(w, h), 4);
-        ctx.fillWStyle(colors.btn);
-        ctx.drawText("?", new Pnt(lx + w / 2, ly + h / 2), dim.text, colors.black);
-        registerAction(lx, ly, w, h, [], (p) => {
-            console.log("tutorial");
-        });
-
-        //settings ⚙
-        lx = x + dim.unit * 0.8
-        ctx.walkRoundRect(new Pnt(lx, ly), new Pnt(w, h), 4);
-        ctx.fillWStyle(colors.btn);
-        ctx.drawText("⚙", new Pnt(lx + w / 2, ly + h / 2), dim.text, colors.black);
-        registerAction(lx, ly, w, h, [], (p) => {
-            console.log("settings");
-        });
-
-
-        //streak 📊
-        lx = x + dim.box * 3 - dim.unit * 0.4;
-        ctx.walkRoundRect(new Pnt(lx, ly), new Pnt(w, h), 4);
-        ctx.fillWStyle(colors.btn);
-        ctx.drawText("📊", new Pnt(lx + w / 2, ly + h / 2), dim.text, colors.black);
-        registerAction(lx, ly, w, h, [], (p) => {
-            console.log("strek");
-        });
 
         //Sudokle 
         ctx.textBaseline = 'alphabetic';
@@ -317,12 +294,6 @@ function walkAndDraw(state, gifcopy) {
         selectPoints.push(new Pnt(start.x + (ui) * dim.unit, start.y));
 
 
-        if (state.hitCount != 81 && !!gifcopy == false) {
-            ctx.walkPath(selectPoints);
-            ctx.fillWStyle(colors.selectFill);
-            ctx.walkPath(selectCellPoints);
-            ctx.fillWStyle(colors.white);
-        }
     }
 
     {
@@ -378,13 +349,13 @@ function walkAndDraw(state, gifcopy) {
                                         points.push(new Pnt(lx, ly));
                                         points.push(new Pnt(lx + wedge, ly));
                                         points.push(new Pnt(lx, ly + wedge));
-                                        textAt = new Pnt(lx + wedge / 3 - 1, ly + wedge / 3 -1);
+                                        textAt = new Pnt(lx + wedge / 3 - 1, ly + wedge / 3 - 1);
                                         break;
                                     case 2:
                                         points.push(new Pnt(lx + dim.unit, ly));
                                         points.push(new Pnt(lx + dim.unit - wedge, ly));
                                         points.push(new Pnt(lx + dim.unit, ly + wedge));
-                                        textAt = new Pnt(lx + dim.unit - wedge / 3 + 1, ly + wedge / 3 -1);
+                                        textAt = new Pnt(lx + dim.unit - wedge / 3 + 1, ly + wedge / 3 - 1);
                                         break;
                                     case 3:
                                         points.push(new Pnt(lx + dim.unit, ly + dim.unit));
@@ -396,7 +367,7 @@ function walkAndDraw(state, gifcopy) {
                                         points.push(new Pnt(lx, ly + dim.unit));
                                         points.push(new Pnt(lx + wedge, ly + dim.unit));
                                         points.push(new Pnt(lx, ly + dim.unit - wedge));
-                                        textAt = new Pnt(lx + wedge / 3 -1, ly + dim.unit - wedge / 3 + 1);
+                                        textAt = new Pnt(lx + wedge / 3 - 1, ly + dim.unit - wedge / 3 + 1);
                                         break
                                     case 5:
                                         textSize = dim.guessTxtSize - 5;
@@ -486,12 +457,36 @@ function walkAndDraw(state, gifcopy) {
     y += dim.box * 3 + dim.gap * 3;
 
     {
+        let entered = [];
+        let ui = state.sx % 3;
+        let uj = state.sy % 3;
+        let bi = (state.sx - ui) / 3;
+        let bj = (state.sy - uj) / 3;
+
+        for (let i = 0; i < 9; i++) {
+            let entry;
+            entry = state.workingGrid[state.sx][i];
+            if (!!entry) entered.push(entry);
+
+            entry = state.workingGrid[i][state.sy];
+            if (!!entry) entered.push(entry);
+        }
+
+        for (let i = 0; i < 3; i++) {
+            for (let j = 0; j < 3; j++) {
+                let entry = state.workingGrid[bi * 3 + i][bj * 3 + j];
+                if (!!entry) entered.push(entry);
+            }
+        }
+
+
         ly = y;
         for (let n = 1; n <= 9; n++) {
+            let btnColor = entered.indexOf(n) >= 0 ? colors.btndisabled : colors.btn;
             lx = x;
             w = dim.btn, h = dim.btn;
             ctx.walkRoundRect(new Pnt(lx, ly), new Pnt(w, h), 4);
-            ctx.fillWStyle(colors.btn);
+            ctx.fillWStyle(btnColor);
             ctx.drawText("" + n, new Pnt(lx + w / 2, ly + h / 2), dim.text, colors.black);
             x += dim.btn + dim.gap;
 
@@ -527,15 +522,37 @@ function walkAndDraw(state, gifcopy) {
             onClear1x1();
         });
 
-
+        let text = (!!window.blob) ? ( (navigator.canShare && navigator.canShare({files: [gifFile]})) ? "Share GIF": "Get GIF") : "Enter"
         lx = x;
         w = dim.box, h = dim.btn;
         ctx.walkRoundRect(new Pnt(lx, ly), new Pnt(w, h), 4);
         ctx.fillWStyle(colors.btn);
-        ctx.drawText("Enter", new Pnt(lx + w / 2, ly + h / 2), dim.text + 5, colors.black);
+        ctx.drawText(text, new Pnt(lx + w / 2, ly + h / 2), dim.text + 5, colors.black);
         x += dim.box + dim.gap;
         registerAction(lx, ly, w, h, [], (p) => {
-            onGuess();
+            if (!!window.blob) {
+                if (navigator.canShare && navigator.canShare({files: [gifFile]})) {
+                    navigator.share({
+                        files: [gifFile],
+                        title: 'Sudokle #' + state.puzzleNo,
+                        text: 'Done in ' + (state.missCount + state.closeCount),
+                      })
+                    
+                } else {
+                    var a = document.createElement("a");
+                    document.body.appendChild(a);
+                    a.style = "display: none";
+
+                    var url = window.URL.createObjectURL(blob);
+                    a.href = url;
+                    a.download = "Sudokle #" + state.puzzleNo + ".gif";
+                    a.click();
+                    window.URL.revokeObjectURL(url);
+                }
+
+            } else {
+                onGuess();
+            }
             return true;
         });
 
@@ -576,6 +593,49 @@ function walkAndDraw(state, gifcopy) {
         gifcopy();
     }
 
+    {
+        x = offx;
+        y = offy;
+        //tutorial ?
+        lx = x;
+        ly = y;
+        w = dim.unit * 0.6, h = dim.titletxt;
+        ctx.walkRoundRect(new Pnt(lx, ly), new Pnt(w, h), 4);
+        ctx.fillWStyle(colors.btn);
+        ctx.drawText("?", new Pnt(lx + w / 2, ly + h / 2), dim.text, colors.black);
+        registerAction(lx, ly, w, h, [], (p) => {
+            console.log("tutorial");
+        });
+
+        //settings ⚙
+        lx = x + dim.unit * 0.8
+        ctx.walkRoundRect(new Pnt(lx, ly), new Pnt(w, h), 4);
+        ctx.fillWStyle(colors.btn);
+        ctx.drawText("⚙", new Pnt(lx + w / 2, ly + h / 2), dim.text, colors.black);
+        registerAction(lx, ly, w, h, [], (p) => {
+            console.log("settings");
+        });
+
+
+        //streak 📊
+        lx = x + dim.box * 3 - dim.unit * 0.4;
+        ctx.walkRoundRect(new Pnt(lx, ly), new Pnt(w, h), 4);
+        ctx.fillWStyle(colors.btn);
+        ctx.drawText("📊", new Pnt(lx + w / 2, ly + h / 2), dim.text, colors.black);
+        registerAction(lx, ly, w, h, [], (p) => {
+            console.log("strek");
+        });
+    }
+
+    if (state.hitCount != 81) {
+        //ctx.walkPath(selectPoints);
+        //ctx.fillWStyle(colors.selectFill);
+        let old = ctx.lineWidth;
+        ctx.lineWidth = 1;
+        ctx.walkPath(selectCellPoints);
+        ctx.strokeWStyle(colors.black);
+        ctx.lineWidth = old;
+    }
 
 }
 
@@ -675,7 +735,7 @@ function onLoad() {
             walkAndDraw(state, () => {
                 var delay = 1000;
                 gif.addFrame(ctx, { delay: delay, copy: true })
-            });
+            }, true);
         });
 
 
@@ -757,8 +817,11 @@ function onGuess() {
 
     if (state.hitCount == 81) {
         gif.on('finished', function (blob) {
-            console.log("gif finished")
-            window.open(URL.createObjectURL(blob));
+            console.log("gif finished:" + blob)
+            window.blob = blob;
+            window.gifFile = new File([blob], "Sudokle #" + state.puzzleNo);
+            //window.open(URL.createObjectURL(blob));
+            walkAndDraw(state);
         });
         gif.render();
 
