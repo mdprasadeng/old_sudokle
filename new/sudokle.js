@@ -134,7 +134,7 @@ var canvas;
 
 class State {
     constructor() {
-        this.puzzleNo = 8888;
+        this.puzzleNo = Math.floor((Date.now() - 1644765648114) / 86400000) + 1;
         this.sx = 0;
         this.sy = 0;
         this.answerGrid = fillGrid();
@@ -308,6 +308,15 @@ function walkAndDraw(state, gifcopy, registerActions) {
                         let txt = state.workingGrid[gx][gy];
                         let guesses = state.guessesGrid[gx][gy];
 
+                        let entered = [];
+                
+                        for (let i = 0; i < 3; i++) {
+                            for (let j = 0; j < 3; j++) {
+                                let entry = state.workingGrid[bi * 3 + i][bj * 3 + j];
+                                if (!!entry) entered.push(entry);
+                            }
+                        }
+
                         lx = x + bi * dim.box + ui * dim.unit + (bi > 0 ? (bi) * dim.gap : 0);
                         ly = y + bj * dim.box + uj * dim.unit + (bj > 0 ? (bj) * dim.gap : 0);
                         w = dim.unit, h = dim.unit;
@@ -398,11 +407,18 @@ function walkAndDraw(state, gifcopy, registerActions) {
                                         textAt = new Pnt(lx + wedge / 3, ly + wedge);
                                         break
                                 }
+                                if (entered.indexOf(key) >=0) {
+                                    ctx.globalAlpha = 0.3;
+                                }
                                 ctx.walkPath(points);
                                 ctx.fillWStyle(value == MISS ? colors.miss : colors.close);
                                 textDrawCalls.push([
                                     "" + key, textAt, textSize, colors.white
                                 ]);
+
+                                if (entered.indexOf(key) >=0) {
+                                    ctx.globalAlpha = 1;
+                                }
                                 guessPlace++;
                             });
                         }
@@ -522,7 +538,11 @@ function walkAndDraw(state, gifcopy, registerActions) {
             onClear1x1();
         });
 
-        let text = (!!window.blob) ? ( (navigator.canShare && navigator.canShare({files: [gifFile]})) ? "Share GIF": "Get GIF") : "Enter"
+        let text = (!!window.blob) ? 
+            ( (navigator.canShare && navigator.canShare({files: [gifFile]})) ? 
+                "Share GIF"
+                : "Get GIF") 
+            : (state.hitCount == 81) ? "Making GIF":"Enter"
         lx = x;
         w = dim.box, h = dim.btn;
         ctx.walkRoundRect(new Pnt(lx, ly), new Pnt(w, h), 4);
@@ -593,7 +613,7 @@ function walkAndDraw(state, gifcopy, registerActions) {
         gifcopy();
     }
 
-    {
+    if (false){
         x = offx;
         y = offy;
         //tutorial ?
