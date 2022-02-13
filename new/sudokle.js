@@ -536,7 +536,7 @@ function walkAndDraw(state, gifcopy, registerActions) {
                         files: [gifFile],
                         title: 'Sudokle #' + state.puzzleNo,
                         text: 'Done in ' + (state.missCount + state.closeCount),
-                      })
+                      });
                     
                 } else {
                     var a = document.createElement("a");
@@ -819,7 +819,7 @@ function onGuess() {
         gif.on('finished', function (blob) {
             console.log("gif finished:" + blob)
             window.blob = blob;
-            window.gifFile = new File([blob], "Sudokle #" + state.puzzleNo);
+            window.gifFile = new File([blob], "Sudokle #" + state.puzzleNo, {"type": "image/gif"});
             //window.open(URL.createObjectURL(blob));
             walkAndDraw(state);
         });
