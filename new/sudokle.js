@@ -819,7 +819,7 @@ function onGuess() {
         gif.on('finished', function (blob) {
             console.log("gif finished:" + blob)
             window.blob = blob;
-            window.gifFile = new File([blob], "Sudokle #" + state.puzzleNo, {"type": "image/gif"});
+            window.gifFile = new File([blob], "Sudokle #" + state.puzzleNo + ".gif", {"type": "image/gif"});
             //window.open(URL.createObjectURL(blob));
             walkAndDraw(state);
         });
